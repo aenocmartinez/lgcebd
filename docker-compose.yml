@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  redaccion:
+    platform: linux/x86_64
+    build: .
+    image: lgcebd:dev
+    container_name: lgcebd-container
+    volumes:
+      - ./:/app
+    ports:
+      - 8585:8585
+    restart: always
+    env_file:
+      - ${HOME}/environments/lgcebd-env/.env
