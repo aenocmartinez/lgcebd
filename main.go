@@ -28,6 +28,7 @@ func main() {
 	protected.Use(middleware.AuthMiddleware())
 	{
 		protected.GET("/secure-data", controller.SecureData)
+		protected.POST("/logout", controller.Logout)
 	}
 
 	r.Run(":8585")
