@@ -11,7 +11,17 @@ import (
 func CheckDBConnection(c *gin.Context) {
 	db := database.GetDB()
 
-	if err := db.Ping(); err != nil {
+	sqlDB, err := db.DB()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  "error",
+			"message": "No se pudo obtener la conexión a la base de datos",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	if err := sqlDB.Ping(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "error",
 			"message": "No se pudo conectar a la base de datos",
