@@ -6,7 +6,15 @@ type CursoPeriodo struct {
 	periodo *Periodo
 }
 
-func NewCursoPeriodo() *CursoPeriodo {
+func NewCursoPeriodo(id int64, curso *Curso, periodo *Periodo) *CursoPeriodo {
+	return &CursoPeriodo{
+		id:      id,
+		curso:   curso,
+		periodo: periodo,
+	}
+}
+
+func NewCursoPeriodoEmpty() *CursoPeriodo {
 	return &CursoPeriodo{}
 }
 
@@ -32,6 +40,20 @@ func (cp *CursoPeriodo) SetPeriodo(periodo *Periodo) {
 
 func (cp *CursoPeriodo) GetPeriodo() *Periodo {
 	return cp.periodo
+}
+
+func (cp *CursoPeriodo) GetCursoID() int64 {
+	if cp.curso != nil {
+		return cp.curso.GetID()
+	}
+	return 0
+}
+
+func (cp *CursoPeriodo) GetPeriodoID() int64 {
+	if cp.periodo != nil {
+		return cp.periodo.GetID()
+	}
+	return 0
 }
 
 func (cp *CursoPeriodo) Existe() bool {

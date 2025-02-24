@@ -1,6 +1,11 @@
 package domain
 
-import "ebd/src/view/dto"
+import (
+	"ebd/src/view/dto"
+	"errors"
+	"log"
+	"time"
+)
 
 type Alumno struct {
 	id                int64
@@ -95,6 +100,37 @@ func (a *Alumno) FindByID(id int64) (*Alumno, error) {
 
 func (a *Alumno) FindByNombre(nombre string) (*Alumno, error) {
 	return a.repository.FindByNombre(nombre)
+}
+
+func (a *Alumno) MatricularCurso(cursoPeriodo *CursoPeriodo) error {
+	if cursoPeriodo == nil || !cursoPeriodo.Existe() {
+		return errors.New("el curso seleccionado no está disponible")
+	}
+
+	return a.repository.MatricularCurso(a.id, cursoPeriodo.GetID())
+}
+
+func (a *Alumno) TieneCursoMatriculado(periodoID int64) bool {
+	return a.repository.TieneCursoMatriculado(a.id, periodoID)
+}
+
+func (a *Alumno) CalcularEdad() int {
+	// Intentar parsear la fecha en formato completo con zona horaria UTC
+	fechaNacimiento, err := time.Parse(time.RFC3339, a.fechaNacimiento)
+	if err != nil {
+		log.Printf("Error al parsear fecha de nacimiento '%s': %v", a.fechaNacimiento, err)
+		return 0
+	}
+
+	hoy := time.Now()
+	edad := hoy.Year() - fechaNacimiento.Year()
+
+	// Ajustar si aún no ha cumplido años en el año actual
+	if hoy.YearDay() < fechaNacimiento.YearDay() {
+		edad--
+	}
+
+	return edad
 }
 
 func (a *Alumno) ToDTO() *dto.AlumnoDTO {

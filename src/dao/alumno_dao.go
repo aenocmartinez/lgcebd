@@ -129,3 +129,25 @@ func (r *AlumnoDao) Update(alumno *domain.Alumno) error {
 func (r *AlumnoDao) Delete(id int64) error {
 	return r.db.Where("id = ?", id).Delete(&alumnoDB{}).Error
 }
+
+func (r *AlumnoDao) MatricularCurso(alumnoID, cursoPeriodoID int64) error {
+	query := "INSERT INTO matriculas (periodo_curso_id, alumnno_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE periodo_curso_id = periodo_curso_id"
+	return r.db.Exec(query, cursoPeriodoID, alumnoID).Error
+}
+
+func (r *AlumnoDao) TieneCursoMatriculado(alumnoID, periodoID int64) bool {
+	var count int64
+	query := `
+		SELECT COUNT(*)
+		FROM matriculas m
+		JOIN periodo_cursos pc ON m.periodo_curso_id = pc.id
+		WHERE m.alumnno_id = ? AND pc.periodo_id = ?;
+	`
+
+	err := r.db.Raw(query, alumnoID, periodoID).Count(&count).Error
+	if err != nil {
+		return false
+	}
+
+	return count > 0
+}

@@ -128,6 +128,7 @@ func (r *PeriodoDao) ObtenerCursos(periodoID int64) ([]dto.CursoPeriodoDTO, erro
 
 	query := `
 		SELECT 
+			pc.id as ID, 
 			pc.periodo_id, 
 			pc.curso_id, 
 			c.nombre, 

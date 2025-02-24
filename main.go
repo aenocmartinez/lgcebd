@@ -43,7 +43,6 @@ func main() {
 			cursoGroup.DELETE("/:id", controller.EliminarCurso)
 		}
 
-		// Grupo de rutas para Periodos
 		periodoGroup := protected.Group("/periodos")
 		{
 			periodoGroup.GET("/", controller.ListarPeriodos)
@@ -53,13 +52,13 @@ func main() {
 			periodoGroup.GET("/:id/cursos", controller.ListarCursosDePeriodo)
 		}
 
-		// 📌 Grupo de Rutas para Alumnos
 		alumnoGroup := protected.Group("/alumnos")
 		{
 			alumnoGroup.GET("/", controller.ListarAlumnos)
 			alumnoGroup.POST("/", controller.CrearAlumno)
 			alumnoGroup.PUT("/:id", controller.ActualizarAlumno)
 			alumnoGroup.DELETE("/:id", controller.EliminarAlumno)
+			alumnoGroup.POST("/:id/matriculas", controller.MatricularAlumno)
 		}
 	}
 

@@ -73,3 +73,31 @@ func EliminarAlumno(c *gin.Context) {
 	response := eliminarAlumno.Execute(id)
 	c.JSON(response.StatusCode, response)
 }
+
+func MatricularAlumno(c *gin.Context) {
+	var request formrequest.MatriculaFormRequest
+	AlumnoID, err := shared.ConvertStringToID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID inválido", nil))
+		return
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "Datos de entrada inválidos", nil))
+		return
+	}
+
+	if err := request.Validate(c); err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, err.Error(), nil))
+		return
+	}
+
+	useCase := usecase.NewMatricularAlumnoUseCase(
+		di.GetContainer().GetAlumnoRepository(),
+		di.GetContainer().GetCursoPeriodoRepository(),
+		di.GetContainer().GetMatriculaRepository(),
+	)
+
+	response := useCase.Execute(AlumnoID, request.CursoPeriodoID)
+	c.JSON(response.StatusCode, response)
+}

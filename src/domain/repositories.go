@@ -38,4 +38,19 @@ type AlumnoRepository interface {
 	Save(alumno *Alumno) error
 	Update(alumno *Alumno) error
 	Delete(id int64) error
+	MatricularCurso(alumnoID, cursoPeriodoID int64) error
+	TieneCursoMatriculado(alumnoID, periodoID int64) bool
+}
+
+type CursoPeriodoRepository interface {
+	FindByPeriodoYCurso(periodoID, cursoID int64) (*CursoPeriodo, error)
+	ObtenerCursosPorPeriodo(periodoID int64) ([]dto.CursoPeriodoDTO, error)
+	FindByID(id int64) (*CursoPeriodo, error)
+}
+
+type MatriculaRepository interface {
+	Save(matricula *Matricula) error
+	ExisteMatricula(alumnoID, cursoPeriodoID int64) bool
+	ObtenerMatriculasPorAlumno(alumnoID int64) ([]Matricula, error)
+	Delete(id int64) error
 }
