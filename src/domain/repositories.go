@@ -27,6 +27,7 @@ type PeriodoRepository interface {
 	Save(periodo *Periodo) error
 	Update(periodo *Periodo) error
 	Delete(id int64) error
+	AgregarCurso(periodoID, cursoID int64) error
 }
 
 type AlumnoRepository interface {

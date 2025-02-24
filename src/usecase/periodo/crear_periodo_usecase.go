@@ -7,32 +7,56 @@ import (
 )
 
 type CrearPeriodoUseCase struct {
-	repo domain.PeriodoRepository
+	periodoRepo domain.PeriodoRepository
+	cursoRepo   domain.CursoRepository
 }
 
-func NewCrearPeriodoUseCase(repo domain.PeriodoRepository) *CrearPeriodoUseCase {
-	return &CrearPeriodoUseCase{repo: repo}
+func NewCrearPeriodoUseCase(
+	periodoRepo domain.PeriodoRepository,
+	cursoRepo domain.CursoRepository,
+) *CrearPeriodoUseCase {
+	return &CrearPeriodoUseCase{
+		periodoRepo: periodoRepo,
+		cursoRepo:   cursoRepo,
+	}
 }
 
 func (u *CrearPeriodoUseCase) Execute(request dto.PeriodoDTO) shared.APIResponse {
 
-	existingPeriodo, err := u.repo.FindByNombre(request.Nombre)
+	periodo, err := u.periodoRepo.FindByNombre(request.Nombre)
 	if err != nil {
-		return shared.NewAPIResponse(500, "Error al buscar el periodo", nil)
+		return shared.NewAPIResponse(500, "Error al verificar la existencia del periodo", nil)
 	}
 
-	if existingPeriodo.Existe() {
-		return shared.NewAPIResponse(400, "Ya existe un periodo con este nombre", nil)
+	if periodo.Existe() {
+		return shared.NewAPIResponse(400, "Ya existe un periodo con ese nombre", nil)
 	}
 
-	periodo := domain.NewPeriodo(u.repo)
-	periodo.SetNombre(request.Nombre)
-	periodo.SetFechaInicio(request.FechaInicio)
-	periodo.SetFechaFin(request.FechaFin)
+	nuevoPeriodo := domain.NewPeriodo(u.periodoRepo)
+	nuevoPeriodo.SetNombre(request.Nombre)
+	nuevoPeriodo.SetFechaInicio(request.FechaInicio)
+	nuevoPeriodo.SetFechaFin(request.FechaFin)
 
-	if err := u.repo.Save(periodo); err != nil {
-		return shared.NewAPIResponse(500, "Error al guardar el periodo", nil)
+	err = u.periodoRepo.Save(nuevoPeriodo)
+	if err != nil {
+		return shared.NewAPIResponse(500, "Error al crear el periodo", nil)
 	}
 
-	return shared.NewAPIResponse(201, "Periodo creado exitosamente", periodo.ToDTO())
+	cursos, err := u.cursoRepo.List()
+	if err != nil {
+		return shared.NewAPIResponse(500, "Error al obtener los cursos", nil)
+	}
+
+	if len(cursos) == 0 {
+		return shared.NewAPIResponse(200, "Periodo creado sin cursos asociados, no hay cursos habilitados.", nil)
+	}
+
+	for _, curso := range cursos {
+		err := u.periodoRepo.AgregarCurso(nuevoPeriodo.GetID(), curso.ID)
+		if err != nil {
+			return shared.NewAPIResponse(500, "Error al asociar el curso al periodo", nil)
+		}
+	}
+
+	return shared.NewAPIResponse(200, "Periodo creado y cursos asociados exitosamente.", nuevoPeriodo.ToDTO())
 }

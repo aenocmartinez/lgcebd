@@ -70,7 +70,10 @@ func (p *Periodo) Existe() bool {
 	return p.id > 0
 }
 
-// Convertir a DTO
+func (p *Periodo) AgregarCurso(cursoID int64) error {
+	return p.repository.AgregarCurso(p.id, cursoID)
+}
+
 func (p *Periodo) ToDTO() *dto.PeriodoDTO {
 	return &dto.PeriodoDTO{
 		ID:          p.id,

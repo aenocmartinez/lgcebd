@@ -3,6 +3,7 @@ package dao
 import (
 	"ebd/src/domain"
 	"ebd/src/view/dto"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -111,4 +112,13 @@ func (r *PeriodoDao) Update(periodo *domain.Periodo) error {
 
 func (r *PeriodoDao) Delete(id int64) error {
 	return r.db.Where("id = ?", id).Delete(&periodoDB{}).Error
+}
+
+func (r *PeriodoDao) AgregarCurso(periodoID, cursoID int64) error {
+	query := "INSERT INTO periodo_cursos (periodo_id, curso_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE periodo_id = periodo_id"
+	err := r.db.Exec(query, periodoID, cursoID).Error
+	if err != nil {
+		log.Printf("❌ Error al asociar curso %d al periodo %d: %v", cursoID, periodoID, err)
+	}
+	return err
 }
