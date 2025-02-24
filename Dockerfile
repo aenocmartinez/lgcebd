@@ -1,19 +1,28 @@
-# FROM golang:1.19 
+# 1️⃣ Usa una imagen base de Golang
+FROM golang:1.21 AS builder
 
-# WORKDIR /redaccion
-
-# COPY . .
-
-# RUN go mod download
-
-# EXPOSE 8085
-
-# CMD ["go", "run", "main.go"]
-
-FROM golang
+# 2️⃣ Establece el directorio de trabajo en /app
 WORKDIR /app
-RUN go mod init pulzo
-RUN apt-get update && apt-get install -y ca-certificates
-RUN apt-get install -y tzdata
+
+# 3️⃣ Copia los archivos de dependencias
+COPY go.mod go.sum ./
+
+# 4️⃣ Descarga dependencias
+RUN go mod download
+
+# 5️⃣ Copia el código fuente
 COPY . .
-CMD ["go", "run", "main.go"]
+
+# 6️⃣ Compilar la aplicación correctamente
+RUN go build -o main .
+
+# 7️⃣ Crear una imagen más liviana sin Golang
+FROM debian:bullseye-slim
+
+WORKDIR /app
+
+# 8️⃣ Copiar el binario compilado desde la imagen builder
+COPY --from=builder /app/main .
+
+# 🔟 Definir el comando de ejecución
+CMD ["/app/main"]
