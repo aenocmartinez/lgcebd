@@ -52,5 +52,6 @@ type MatriculaRepository interface {
 	Save(matricula *Matricula) error
 	ExisteMatricula(alumnoID, cursoPeriodoID int64) bool
 	ObtenerMatriculasPorAlumno(alumnoID int64) ([]Matricula, error)
+	ObtenerMatriculasPorCursoPeriodo(cursoPeriodoID int64) ([]Matricula, error)
 	Delete(id int64) error
 }

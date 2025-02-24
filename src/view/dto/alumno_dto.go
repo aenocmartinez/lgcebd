@@ -8,4 +8,5 @@ type AlumnoDTO struct {
 	Acudiente         string `json:"acudiente"`
 	AcudienteTelefono string `json:"acudiente_telefono"`
 	Direccion         string `json:"direccion"`
+	Edad              int    `json:"edad,omitempty"`
 }

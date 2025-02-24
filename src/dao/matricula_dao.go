@@ -88,3 +88,58 @@ func (r *MatriculaDao) ObtenerMatriculasPorAlumno(alumnoID int64) ([]domain.Matr
 func (r *MatriculaDao) Delete(id int64) error {
 	return r.db.Table("matriculas").Where("id = ?", id).Delete(&matriculaDB{}).Error
 }
+
+func (r *MatriculaDao) ObtenerMatriculasPorCursoPeriodo(cursoPeriodoID int64) ([]domain.Matricula, error) {
+	var matriculasData []struct {
+		ID                int64  `gorm:"column:id"`
+		AlumnoID          int64  `gorm:"column:alumnno_id"`
+		Nombre            string `gorm:"column:nombre"`
+		FechaNacimiento   string `gorm:"column:fecha_nacimiento"`
+		Telefono          string `gorm:"column:telefono"`
+		Acudiente         string `gorm:"column:acudiente"`
+		AcudienteTelefono string `gorm:"column:acudiente_telefono"`
+		Direccion         string `gorm:"column:direccion"`
+		CursoPeriodoID    int64  `gorm:"column:periodo_curso_id"`
+	}
+
+	query := `
+		SELECT m.id, 
+		       a.id AS alumnno_id, 
+		       a.nombre, 
+		       a.fecha_nacimiento, 
+		       a.telefono, 
+		       a.acudiente, 
+		       a.acudiente_telefono, 
+		       a.direccion,
+		       m.periodo_curso_id
+		FROM matriculas m
+		INNER JOIN alumnos a ON a.id = m.alumnno_id
+		WHERE m.periodo_curso_id = ?
+	`
+
+	result := r.db.Raw(query, cursoPeriodoID).Scan(&matriculasData)
+	if result.Error != nil {
+		fmt.Println(result.Error)
+		return nil, result.Error
+	}
+
+	var matriculas []domain.Matricula
+	for _, data := range matriculasData {
+		alumno := domain.NewAlumno(nil)
+		alumno.SetID(data.AlumnoID)
+		alumno.SetNombre(data.Nombre)
+		alumno.SetFechaNacimiento(data.FechaNacimiento)
+		alumno.SetTelefono(data.Telefono)
+		alumno.SetAcudiente(data.Acudiente)
+		alumno.SetAcudienteTelefono(data.AcudienteTelefono)
+		alumno.SetDireccion(data.Direccion)
+
+		cursoPeriodo := domain.NewCursoPeriodoEmpty()
+		cursoPeriodo.SetID(data.CursoPeriodoID)
+
+		matricula := domain.NewMatricula(data.ID, alumno, cursoPeriodo)
+		matriculas = append(matriculas, *matricula)
+	}
+
+	return matriculas, nil
+}

@@ -82,3 +82,25 @@ func ListarCursosDePeriodo(c *gin.Context) {
 	response := useCase.Execute(id)
 	c.JSON(response.StatusCode, response)
 }
+
+func ListarAlumnosMatriculados(c *gin.Context) {
+
+	periodoID, err := shared.ConvertStringToID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID de periodo inválido", nil))
+		return
+	}
+
+	cursoID, err := shared.ConvertStringToID(c.Param("curso_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID de curso inválido", nil))
+		return
+	}
+
+	useCase := usecase.NewListarAlumnosMatriculadosUseCase(
+		di.GetContainer().GetMatriculaRepository(),
+		di.GetContainer().GetCursoPeriodoRepository())
+
+	response := useCase.Execute(periodoID, cursoID)
+	c.JSON(response.StatusCode, response)
+}

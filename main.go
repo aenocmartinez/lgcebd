@@ -50,6 +50,7 @@ func main() {
 			periodoGroup.PUT("/:id", controller.ActualizarPeriodo)
 			periodoGroup.DELETE("/:id", controller.EliminarPeriodo)
 			periodoGroup.GET("/:id/cursos", controller.ListarCursosDePeriodo)
+			periodoGroup.GET("/:id/cursos/:curso_id/alumnos", controller.ListarAlumnosMatriculados)
 		}
 
 		alumnoGroup := protected.Group("/alumnos")
