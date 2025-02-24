@@ -16,14 +16,6 @@ func NewCrearAlumnoUseCase(alumnoRepo domain.AlumnoRepository) *CrearAlumnoUseCa
 
 func (u *CrearAlumnoUseCase) Execute(request formrequest.AlumnoFormRequest) shared.APIResponse {
 
-	existingAlumno, err := u.alumnoRepo.FindByNombre(request.Nombre)
-	if err != nil {
-		return shared.NewAPIResponse(500, "Error al verificar el alumno", nil)
-	}
-	if existingAlumno.Existe() {
-		return shared.NewAPIResponse(400, "El alumno ya existe", nil)
-	}
-
 	newAlumno := domain.NewAlumno(u.alumnoRepo)
 	newAlumno.SetNombre(request.Nombre)
 	newAlumno.SetFechaNacimiento(request.FechaNacimiento)

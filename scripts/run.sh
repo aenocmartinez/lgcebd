@@ -10,16 +10,12 @@ compile() {
     GOOS=linux GOARCH=amd64 go build -o main .
 }
 
-# Función para limpiar logs del contenedor
-clean_logs() {
-    LOG_PATH=$(docker inspect --format='{{.LogPath}}' $CONTAINER_NAME 2>/dev/null || echo "")
-
-    if [ -n "$LOG_PATH" ]; then
-        echo "🧹 Limpiando logs del contenedor..."
-        sudo truncate -s 0 "$LOG_PATH" 2>/dev/null || true
-    else
-        echo "⚠️ No se encontraron logs para limpiar."
-    fi
+# 🔄 Función para limpiar logs del contenedor
+clear_logs() {
+    echo "🧹 Limpiando logs del contenedor..."
+    docker stop $CONTAINER_NAME >/dev/null 2>&1 || true
+    docker rm $CONTAINER_NAME >/dev/null 2>&1 || true
+    docker compose up -d
 }
 
 # Función para reiniciar el contenedor sin reconstruir la imagen
@@ -27,7 +23,10 @@ restart_container() {
     echo "♻️ Reiniciando contenedor..."
     docker stop $CONTAINER_NAME >/dev/null 2>&1 || true
 
-    clean_logs  # 🔄 Llamar a la función de limpieza de logs antes de reiniciar
+    # 🔄 Limpiar logs del contenedor correctamente
+    echo "🧹 Reiniciando logs del contenedor..."
+    docker logs --tail 0 $CONTAINER_NAME >/dev/null 2>&1 || true
+    truncate -s 0 $(docker inspect --format='{{.LogPath}}' $CONTAINER_NAME) 2>/dev/null || true
 
     docker start $CONTAINER_NAME || docker compose up -d
     echo "✅ Contenedor en ejecución."
@@ -37,14 +36,12 @@ restart_container() {
 case "$1" in
     --compile)
         compile
-        clean_logs   # 🔄 Ahora también limpia los logs en `--compile`
-        restart_container
+        clear_logs
         ;;
     --build)
         echo "🔨 Construyendo imagen y reiniciando..."
         compile  # Asegurar que el binario sea correcto antes de reconstruir
         docker compose down
-        clean_logs   # 🔄 También limpia los logs antes de construir la imagen
         docker compose up -d --build
         ;;
     *)

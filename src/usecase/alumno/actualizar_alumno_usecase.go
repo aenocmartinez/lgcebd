@@ -20,6 +20,7 @@ func (u *ActualizarAlumnoUseCase) Execute(id int64, request formrequest.AlumnoFo
 	if err != nil {
 		return shared.NewAPIResponse(500, "Error al buscar el alumno", nil)
 	}
+
 	if !existingAlumno.Existe() {
 		return shared.NewAPIResponse(404, "Alumno no encontrado", nil)
 	}
