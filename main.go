@@ -13,6 +13,7 @@ import (
 func main() {
 	r := gin.Default()
 
+	// Configuración de CORS
 	r.Use(cors.New(cors.Config{
 		AllowAllOrigins:  true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -30,6 +31,11 @@ func main() {
 	{
 		protected.GET("/secure-data", controller.SecureData)
 		protected.POST("/logout", controller.Logout)
+
+		cursoGroup := protected.Group("/cursos")
+		{
+			cursoGroup.GET("/", controller.ListarCursos)
+		}
 	}
 
 	r.Run(":8585")

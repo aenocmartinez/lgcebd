@@ -10,8 +10,9 @@ import (
 )
 
 type Container struct {
-	db       *gorm.DB
-	userRepo *dao.UserDao
+	db        *gorm.DB
+	userRepo  *dao.UserDao
+	cursoRepo *dao.CursoDao
 }
 
 var (
@@ -23,8 +24,9 @@ func GetContainer() *Container {
 	once.Do(func() {
 		db := database.GetDB()
 		instance = &Container{
-			db:       db,
-			userRepo: dao.NewUserDao(db),
+			db:        db,
+			userRepo:  dao.NewUserDao(db),
+			cursoRepo: dao.NewCursoDao(db), // ✅ Se inyecta CursoDao
 		}
 	})
 	return instance
@@ -32,4 +34,8 @@ func GetContainer() *Container {
 
 func (c *Container) GetUserRepository() *dao.UserDao {
 	return c.userRepo
+}
+
+func (c *Container) GetCursoRepository() *dao.CursoDao {
+	return c.cursoRepo
 }
