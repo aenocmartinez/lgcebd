@@ -122,3 +122,20 @@ func (r *PeriodoDao) AgregarCurso(periodoID, cursoID int64) error {
 	}
 	return err
 }
+
+func (r *PeriodoDao) ObtenerCursos(periodoID int64) ([]dto.CursoDTO, error) {
+	var cursos []dto.CursoDTO
+
+	query := `
+		SELECT c.id, c.nombre, c.edad_minima, c.edad_maxima, c.estado
+		FROM cursos c
+		INNER JOIN periodo_cursos pc ON c.id = pc.curso_id
+		WHERE pc.periodo_id = ?
+	`
+	result := r.db.Raw(query, periodoID).Scan(&cursos)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return cursos, nil
+}

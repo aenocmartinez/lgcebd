@@ -69,3 +69,16 @@ func EliminarPeriodo(c *gin.Context) {
 	response := useCase.Execute(id)
 	c.JSON(response.StatusCode, response)
 }
+
+func ListarCursosDePeriodo(c *gin.Context) {
+
+	id, err := shared.ConvertStringToID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID inválido", nil))
+		return
+	}
+
+	useCase := usecase.NewListarCursosPeriodoUseCase(di.GetContainer().GetPeriodoRepository())
+	response := useCase.Execute(id)
+	c.JSON(response.StatusCode, response)
+}

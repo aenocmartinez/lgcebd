@@ -50,6 +50,7 @@ func main() {
 			periodoGroup.POST("/", controller.CrearPeriodo)
 			periodoGroup.PUT("/:id", controller.ActualizarPeriodo)
 			periodoGroup.DELETE("/:id", controller.EliminarPeriodo)
+			periodoGroup.GET("/:id/cursos", controller.ListarCursosDePeriodo)
 		}
 
 		// 📌 Grupo de Rutas para Alumnos
