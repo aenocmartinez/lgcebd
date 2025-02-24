@@ -97,10 +97,10 @@ func (r *CursoDao) List() ([]dto.CursoDTO, error) {
 	result := r.db.Table("cursos").Find(&cursosData)
 
 	if result.Error != nil {
-		return nil, result.Error
+		return []dto.CursoDTO{}, result.Error
 	}
 
-	var cursosDTO []dto.CursoDTO
+	cursosDTO := []dto.CursoDTO{}
 	for _, cursoData := range cursosData {
 		curso := domain.NewCurso(r)
 		curso.SetID(cursoData.ID)

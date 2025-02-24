@@ -19,3 +19,12 @@ type CursoRepository interface {
 	Delete(id int64) error
 	List() ([]dto.CursoDTO, error)
 }
+
+type PeriodoRepository interface {
+	FindByID(id int64) (*Periodo, error)
+	FindByNombre(nombre string) (*Periodo, error)
+	List() ([]dto.PeriodoDTO, error)
+	Save(periodo *Periodo) error
+	Update(periodo *Periodo) error
+	Delete(id int64) error
+}
