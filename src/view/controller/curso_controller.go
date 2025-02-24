@@ -49,3 +49,16 @@ func ActualizarCurso(c *gin.Context) {
 	response := actualizarCurso.Execute(id, request)
 	c.JSON(response.StatusCode, response)
 }
+
+func EliminarCurso(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.ParseInt(idParam, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID inválido", nil))
+		return
+	}
+
+	eliminarCurso := usecase.EliminarCursoUseCase{}
+	response := eliminarCurso.Execute(id)
+	c.JSON(response.StatusCode, response)
+}

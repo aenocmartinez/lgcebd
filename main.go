@@ -40,6 +40,7 @@ func main() {
 			cursoGroup.GET("/", controller.ListarCursos)
 			cursoGroup.POST("/", controller.CrearCurso)
 			cursoGroup.PUT("/:id", controller.ActualizarCurso)
+			cursoGroup.DELETE("/:id", controller.EliminarCurso)
 		}
 	}
 
