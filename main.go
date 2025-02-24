@@ -35,6 +35,7 @@ func main() {
 		cursoGroup := protected.Group("/cursos")
 		{
 			cursoGroup.GET("/", controller.ListarCursos)
+			cursoGroup.POST("/", controller.CrearCurso)
 		}
 	}
 
