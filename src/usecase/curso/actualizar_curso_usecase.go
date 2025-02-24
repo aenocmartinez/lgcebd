@@ -7,20 +7,46 @@ import (
 )
 
 type ActualizarCursoUseCase struct {
-	repo domain.CursoRepository
+	cursoRepo domain.CursoRepository
 }
 
-func NewActualizarCursoUseCase(repo domain.CursoRepository) *ActualizarCursoUseCase {
-	return &ActualizarCursoUseCase{repo: repo}
+func NewActualizarCursoUseCase(cursoRepo domain.CursoRepository) *ActualizarCursoUseCase {
+	return &ActualizarCursoUseCase{cursoRepo: cursoRepo}
 }
 
 func (u *ActualizarCursoUseCase) Execute(id int64, request dto.CursoDTO) shared.APIResponse {
-	curso, err := u.repo.FindByID(id)
+
+	curso, err := u.cursoRepo.FindByID(id)
 	if err != nil {
 		return shared.NewAPIResponse(500, "Error al buscar el curso", nil)
 	}
+
 	if !curso.Existe() {
-		return shared.NewAPIResponse(404, "El curso no existe", nil)
+		return shared.NewAPIResponse(404, "Curso no encontrado", nil)
+	}
+
+	existente, err := u.cursoRepo.FindByNombre(request.Nombre)
+	if err != nil {
+		return shared.NewAPIResponse(500, "Error al validar el curso existente", nil)
+	}
+
+	if existente.Existe() && existente.GetID() != id {
+		return shared.NewAPIResponse(400, "Ya existe un curso con este nombre", nil)
+	}
+
+	cursos, err := u.cursoRepo.List()
+	if err != nil {
+		return shared.NewAPIResponse(500, "Error al obtener los cursos existentes", nil)
+	}
+
+	for _, c := range cursos {
+		if c.ID != id &&
+			((request.EdadMinima >= c.EdadMinima && request.EdadMinima <= c.EdadMaxima) ||
+				(request.EdadMaxima >= c.EdadMinima && request.EdadMaxima <= c.EdadMaxima) ||
+				(c.EdadMinima >= request.EdadMinima && c.EdadMinima <= request.EdadMaxima) ||
+				(c.EdadMaxima >= request.EdadMinima && c.EdadMaxima <= request.EdadMaxima)) {
+			return shared.NewAPIResponse(400, "El curso tiene edades que se cruzan con otro curso existente", nil)
+		}
 	}
 
 	curso.SetNombre(request.Nombre)
@@ -28,7 +54,7 @@ func (u *ActualizarCursoUseCase) Execute(id int64, request dto.CursoDTO) shared.
 	curso.SetEdadMaxima(request.EdadMaxima)
 	curso.SetEstado(request.Estado)
 
-	if err := u.repo.Update(curso); err != nil {
+	if err := curso.Update(); err != nil {
 		return shared.NewAPIResponse(500, "Error al actualizar el curso", nil)
 	}
 

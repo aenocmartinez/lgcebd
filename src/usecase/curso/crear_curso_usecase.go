@@ -7,30 +7,45 @@ import (
 )
 
 type CrearCursoUseCase struct {
-	repo domain.CursoRepository
+	cursoRepo domain.CursoRepository
 }
 
-func NewCrearCursoUseCase(repo domain.CursoRepository) *CrearCursoUseCase {
-	return &CrearCursoUseCase{repo: repo}
+func NewCrearCursoUseCase(cursoRepo domain.CursoRepository) *CrearCursoUseCase {
+	return &CrearCursoUseCase{cursoRepo: cursoRepo}
 }
 
 func (u *CrearCursoUseCase) Execute(request dto.CursoDTO) shared.APIResponse {
-	existingCurso, err := u.repo.FindByNombre(request.Nombre)
+	// Verificar si ya existe un curso con el mismo nombre
+	existente, err := u.cursoRepo.FindByNombre(request.Nombre)
 	if err != nil {
-		return shared.NewAPIResponse(500, "Error al buscar el curso", nil)
+		return shared.NewAPIResponse(500, "Error al validar el curso existente", nil)
 	}
 
-	if existingCurso.Existe() {
+	if existente.Existe() {
 		return shared.NewAPIResponse(400, "Ya existe un curso con este nombre", nil)
 	}
 
-	curso := domain.NewCurso(u.repo)
+	cursos, err := u.cursoRepo.List()
+	if err != nil {
+		return shared.NewAPIResponse(500, "Error al obtener los cursos existentes", nil)
+	}
+
+	for _, curso := range cursos {
+		if (request.EdadMinima >= curso.EdadMinima && request.EdadMinima <= curso.EdadMaxima) ||
+			(request.EdadMaxima >= curso.EdadMinima && request.EdadMaxima <= curso.EdadMaxima) ||
+			(curso.EdadMinima >= request.EdadMinima && curso.EdadMinima <= request.EdadMaxima) ||
+			(curso.EdadMaxima >= request.EdadMinima && curso.EdadMaxima <= request.EdadMaxima) {
+			return shared.NewAPIResponse(400, "El curso tiene edades que se cruzan con otro curso existente", nil)
+		}
+	}
+
+	curso := domain.NewCurso(u.cursoRepo)
 	curso.SetNombre(request.Nombre)
 	curso.SetEdadMinima(request.EdadMinima)
 	curso.SetEdadMaxima(request.EdadMaxima)
 	curso.SetEstado("activo")
 
-	if err := u.repo.Save(curso); err != nil {
+	if err := curso.Save(); err != nil {
 		return shared.NewAPIResponse(500, "Error al guardar el curso", nil)
 	}
 

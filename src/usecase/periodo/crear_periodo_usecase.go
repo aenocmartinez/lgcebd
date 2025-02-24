@@ -52,6 +52,11 @@ func (u *CrearPeriodoUseCase) Execute(request dto.PeriodoDTO) shared.APIResponse
 	}
 
 	for _, curso := range cursos {
+
+		if curso.Estado == "inactivo" {
+			continue
+		}
+
 		err := u.periodoRepo.AgregarCurso(nuevoPeriodo.GetID(), curso.ID)
 		if err != nil {
 			return shared.NewAPIResponse(500, "Error al asociar el curso al periodo", nil)
