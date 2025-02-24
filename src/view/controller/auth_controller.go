@@ -2,12 +2,10 @@ package controller
 
 import (
 	"ebd/src/infraestructure/middleware"
+	"ebd/src/usecase/auth"
 	"net/http"
-	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 type LoginRequest struct {
@@ -22,54 +20,30 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if req.Username != "admin" || req.Password != "123456" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Credenciales incorrectas"})
-		return
-	}
+	loginUseCase := auth.LoginUseCase{}
 
-	userSecret := middleware.GetUserSecret(req.Username)
-
-	expirationTime := time.Now().Add(24 * time.Hour)
-	claims := jwt.MapClaims{
-		"username": req.Username,
-		"exp":      expirationTime.Unix(),
-		"jti":      userSecret,
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(userSecret))
+	userDTO, err := loginUseCase.Execute(req.Username, req.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error generando el token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+	// Respuesta de autenticación exitosa con UserDTO
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Login exitoso",
+		"user":    userDTO,
+	})
 }
 
 func Logout(c *gin.Context) {
-	authHeader := c.GetHeader("Authorization")
-	if authHeader == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Token no proporcionado"})
+
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "No autorizado"})
 		return
 	}
 
-	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-
-	parsedToken, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Token inválido"})
-		return
-	}
-
-	claims, ok := parsedToken.Claims.(jwt.MapClaims)
-	if !ok || claims["username"] == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Token inválido"})
-		return
-	}
-
-	username := claims["username"].(string)
-
-	middleware.InvalidateUserTokens(username)
+	middleware.InvalidateUserTokens(string(userID.(int64)))
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logout exitoso. Tu sesión ha sido cerrada."})
 }

@@ -1,5 +1,7 @@
 package domain
 
+import "ebd/src/view/dto"
+
 type User struct {
 	id           int64
 	username     string
@@ -79,4 +81,13 @@ func (u *User) FindByEmail(email string) (*User, error) {
 
 func (u *User) FindByUsername(username string) (*User, error) {
 	return u.repository.FindByUsername(username)
+}
+
+func (u *User) ToDTO() *dto.UserDTO {
+	return &dto.UserDTO{
+		ID:           u.id,
+		Username:     u.username,
+		Email:        u.email,
+		SessionToken: u.sessionToken,
+	}
 }
