@@ -4,6 +4,7 @@ import (
 	"ebd/src/infraestructure/middleware"
 	"ebd/src/usecase/auth"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,7 +44,9 @@ func Logout(c *gin.Context) {
 		return
 	}
 
-	middleware.InvalidateUserTokens(string(userID.(int64)))
+	userIDStr := strconv.FormatInt(userID.(int64), 10)
+
+	middleware.InvalidateUserTokens(userIDStr)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logout exitoso. Tu sesión ha sido cerrada."})
 }

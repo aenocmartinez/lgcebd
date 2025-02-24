@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"strconv"
 	"sync"
 	"time"
 
@@ -45,7 +46,8 @@ func InvalidateUserTokens(userID string) {
 }
 
 func GenerateToken(userID int64, username string) (string, error) {
-	secret := GetUserSecret(string(userID))
+	userIDStr := strconv.FormatInt(userID, 10)
+	secret := GetUserSecret(userIDStr)
 
 	claims := jwt.MapClaims{
 		"user_id":  userID,
@@ -58,7 +60,9 @@ func GenerateToken(userID int64, username string) (string, error) {
 }
 
 func VerifyToken(tokenString string, userID int64) (*jwt.Token, error) {
-	secret := GetUserSecret(string(userID))
+
+	userIDStr := strconv.FormatInt(userID, 10)
+	secret := GetUserSecret(userIDStr)
 
 	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil

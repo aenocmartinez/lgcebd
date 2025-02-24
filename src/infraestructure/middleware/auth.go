@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -31,7 +32,9 @@ func AuthMiddleware() gin.HandlerFunc {
 			}
 
 			userID := claims["user_id"].(float64)
-			secret := GetUserSecret(string(int64(userID)))
+			userIDStr := strconv.FormatInt(int64(userID), 10)
+
+			secret := GetUserSecret(userIDStr)
 
 			return []byte(secret), nil
 		})
