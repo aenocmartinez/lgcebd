@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"ebd/src/infraestructure/di"
 	"ebd/src/shared"
 	usecase "ebd/src/usecase/periodo"
 	formrequest "ebd/src/view/formrequest/periodo"
@@ -10,8 +11,8 @@ import (
 )
 
 func ListarPeriodos(c *gin.Context) {
-	listarPeriodos := usecase.ListarPeriodosUseCase{}
-	response := listarPeriodos.Execute()
+	useCase := usecase.NewListarPeriodosUseCase(di.GetContainer().GetPeriodoRepository())
+	response := useCase.Execute()
 	c.JSON(response.StatusCode, response)
 }
 
@@ -28,8 +29,8 @@ func CrearPeriodo(c *gin.Context) {
 		return
 	}
 
-	crearPeriodo := usecase.CrearPeriodoUseCase{}
-	response := crearPeriodo.Execute(request)
+	useCase := usecase.NewCrearPeriodoUseCase(di.GetContainer().GetPeriodoRepository())
+	response := useCase.Execute(request.ToDTO())
 	c.JSON(response.StatusCode, response)
 }
 
@@ -52,20 +53,19 @@ func ActualizarPeriodo(c *gin.Context) {
 		return
 	}
 
-	actualizarPeriodo := usecase.ActualizarPeriodoUseCase{}
-	response := actualizarPeriodo.Execute(id, request)
+	useCase := usecase.NewActualizarPeriodoUseCase(di.GetContainer().GetPeriodoRepository())
+	response := useCase.Execute(id, request.ToDTO())
 	c.JSON(response.StatusCode, response)
 }
 
 func EliminarPeriodo(c *gin.Context) {
-
 	id, err := shared.ConvertStringToID(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID inválido", nil))
 		return
 	}
 
-	eliminarPeriodo := usecase.EliminarPeriodoUseCase{}
-	response := eliminarPeriodo.Execute(id)
+	useCase := usecase.NewEliminarPeriodoUseCase(di.GetContainer().GetPeriodoRepository())
+	response := useCase.Execute(id)
 	c.JSON(response.StatusCode, response)
 }

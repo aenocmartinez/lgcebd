@@ -1,23 +1,26 @@
 package usecase
 
 import (
-	"ebd/src/infraestructure/di"
+	"ebd/src/domain"
 	"ebd/src/shared"
-	formrequest "ebd/src/view/formrequest/curso"
+	"ebd/src/view/dto"
 )
 
-type UpdateCursoUseCase struct{}
+type ActualizarCursoUseCase struct {
+	repo domain.CursoRepository
+}
 
-func (u *UpdateCursoUseCase) Execute(id int64, request formrequest.CursoFormRequest) shared.APIResponse {
-	cursoRepo := di.GetContainer().GetCursoRepository()
+func NewActualizarCursoUseCase(repo domain.CursoRepository) *ActualizarCursoUseCase {
+	return &ActualizarCursoUseCase{repo: repo}
+}
 
-	curso, err := cursoRepo.FindByID(id)
+func (u *ActualizarCursoUseCase) Execute(id int64, request dto.CursoDTO) shared.APIResponse {
+	curso, err := u.repo.FindByID(id)
 	if err != nil {
 		return shared.NewAPIResponse(500, "Error al buscar el curso", nil)
 	}
-
 	if !curso.Existe() {
-		return shared.NewAPIResponse(404, "Curso no encontrado", nil)
+		return shared.NewAPIResponse(404, "El curso no existe", nil)
 	}
 
 	curso.SetNombre(request.Nombre)
@@ -25,7 +28,7 @@ func (u *UpdateCursoUseCase) Execute(id int64, request formrequest.CursoFormRequ
 	curso.SetEdadMaxima(request.EdadMaxima)
 	curso.SetEstado(request.Estado)
 
-	if err := curso.Update(); err != nil {
+	if err := u.repo.Update(curso); err != nil {
 		return shared.NewAPIResponse(500, "Error al actualizar el curso", nil)
 	}
 

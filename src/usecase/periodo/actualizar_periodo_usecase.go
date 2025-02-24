@@ -1,30 +1,35 @@
 package usecase
 
 import (
-	"ebd/src/infraestructure/di"
+	"ebd/src/domain"
 	"ebd/src/shared"
-
-	formrequest "ebd/src/view/formrequest/periodo"
+	"ebd/src/view/dto"
 )
 
-type ActualizarPeriodoUseCase struct{}
+type ActualizarPeriodoUseCase struct {
+	repo domain.PeriodoRepository
+}
 
-func (u *ActualizarPeriodoUseCase) Execute(id int64, request formrequest.PeriodoFormRequest) shared.APIResponse {
-	periodoRepo := di.GetContainer().GetPeriodoRepository()
+func NewActualizarPeriodoUseCase(repo domain.PeriodoRepository) *ActualizarPeriodoUseCase {
+	return &ActualizarPeriodoUseCase{repo: repo}
+}
 
-	periodo, err := periodoRepo.FindByID(id)
+func (u *ActualizarPeriodoUseCase) Execute(id int64, request dto.PeriodoDTO) shared.APIResponse {
+
+	periodo, err := u.repo.FindByID(id)
 	if err != nil {
 		return shared.NewAPIResponse(500, "Error al buscar el periodo", nil)
 	}
+
 	if !periodo.Existe() {
-		return shared.NewAPIResponse(404, "Periodo no encontrado", nil)
+		return shared.NewAPIResponse(404, "El periodo no existe", nil)
 	}
 
 	periodo.SetNombre(request.Nombre)
 	periodo.SetFechaInicio(request.FechaInicio)
 	periodo.SetFechaFin(request.FechaFin)
 
-	if err := periodo.Update(); err != nil {
+	if err := u.repo.Update(periodo); err != nil {
 		return shared.NewAPIResponse(500, "Error al actualizar el periodo", nil)
 	}
 

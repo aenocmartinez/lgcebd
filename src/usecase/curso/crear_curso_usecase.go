@@ -2,32 +2,36 @@ package usecase
 
 import (
 	"ebd/src/domain"
-	"ebd/src/infraestructure/di"
 	"ebd/src/shared"
-	formrequest "ebd/src/view/formrequest/curso"
+	"ebd/src/view/dto"
 )
 
-type CrearCursoUseCase struct{}
+type CrearCursoUseCase struct {
+	repo domain.CursoRepository
+}
 
-func (u *CrearCursoUseCase) Execute(request formrequest.CursoFormRequest) shared.APIResponse {
-	cursoRepo := di.GetContainer().GetCursoRepository()
+func NewCrearCursoUseCase(repo domain.CursoRepository) *CrearCursoUseCase {
+	return &CrearCursoUseCase{repo: repo}
+}
 
-	existente, err := cursoRepo.FindByNombre(request.Nombre)
+func (u *CrearCursoUseCase) Execute(request dto.CursoDTO) shared.APIResponse {
+	existingCurso, err := u.repo.FindByNombre(request.Nombre)
 	if err != nil {
 		return shared.NewAPIResponse(500, "Error al buscar el curso", nil)
 	}
-	if existente.Existe() {
-		return shared.NewAPIResponse(400, "El curso ya existe", nil)
+
+	if existingCurso.Existe() {
+		return shared.NewAPIResponse(400, "Ya existe un curso con este nombre", nil)
 	}
 
-	curso := domain.NewCurso(cursoRepo)
+	curso := domain.NewCurso(u.repo)
 	curso.SetNombre(request.Nombre)
 	curso.SetEdadMinima(request.EdadMinima)
 	curso.SetEdadMaxima(request.EdadMaxima)
 	curso.SetEstado("activo")
 
-	if err := curso.Save(); err != nil {
-		return shared.NewAPIResponse(500, "Error al crear el curso", nil)
+	if err := u.repo.Save(curso); err != nil {
+		return shared.NewAPIResponse(500, "Error al guardar el curso", nil)
 	}
 
 	return shared.NewAPIResponse(201, "Curso creado exitosamente", curso.ToDTO())

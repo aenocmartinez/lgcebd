@@ -1,19 +1,18 @@
 package controller
 
 import (
-	"net/http"
-	"strconv"
-
+	"ebd/src/infraestructure/di"
 	"ebd/src/shared"
 	usecase "ebd/src/usecase/curso"
 	formrequest "ebd/src/view/formrequest/curso"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func ListarCursos(c *gin.Context) {
-	listarCursos := usecase.ListarCursosUseCase{}
-	response := listarCursos.Execute()
+	useCase := usecase.NewListarCursosUseCase(di.GetContainer().GetCursoRepository())
+	response := useCase.Execute()
 	c.JSON(response.StatusCode, response)
 }
 
@@ -21,44 +20,52 @@ func CrearCurso(c *gin.Context) {
 	var request formrequest.CursoFormRequest
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "Datos inválidos", nil))
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "Datos de entrada inválidos", nil))
 		return
 	}
 
-	crearCurso := usecase.CrearCursoUseCase{}
-	response := crearCurso.Execute(request)
+	if err := request.Validate(c); err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, err.Error(), nil))
+		return
+	}
+
+	useCase := usecase.NewCrearCursoUseCase(di.GetContainer().GetCursoRepository())
+	response := useCase.Execute(request.ToDTO())
 	c.JSON(response.StatusCode, response)
 }
 
 func ActualizarCurso(c *gin.Context) {
-	idParam := c.Param("id")
-	id, err := strconv.ParseInt(idParam, 10, 64)
+	var request formrequest.CursoFormRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "Datos de entrada inválidos", nil))
+		return
+	}
+
+	if err := request.Validate(c); err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, err.Error(), nil))
+		return
+	}
+
+	id, err := shared.ConvertStringToID(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID inválido", nil))
 		return
 	}
 
-	var request formrequest.CursoFormRequest
-
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "Datos inválidos", nil))
-		return
-	}
-
-	actualizarCurso := usecase.UpdateCursoUseCase{}
-	response := actualizarCurso.Execute(id, request)
+	useCase := usecase.NewActualizarCursoUseCase(di.GetContainer().GetCursoRepository())
+	response := useCase.Execute(id, request.ToDTO())
 	c.JSON(response.StatusCode, response)
 }
 
 func EliminarCurso(c *gin.Context) {
-	idParam := c.Param("id")
-	id, err := strconv.ParseInt(idParam, 10, 64)
+	id, err := shared.ConvertStringToID(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID inválido", nil))
 		return
 	}
 
-	eliminarCurso := usecase.EliminarCursoUseCase{}
-	response := eliminarCurso.Execute(id)
+	useCase := usecase.NewEliminarCursoUseCase(di.GetContainer().GetCursoRepository())
+	response := useCase.Execute(id)
 	c.JSON(response.StatusCode, response)
 }
