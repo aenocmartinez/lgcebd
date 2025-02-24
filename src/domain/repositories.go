@@ -28,7 +28,7 @@ type PeriodoRepository interface {
 	Update(periodo *Periodo) error
 	Delete(id int64) error
 	AgregarCurso(periodoID, cursoID int64) error
-	ObtenerCursos(periodoID int64) ([]dto.CursoDTO, error)
+	ObtenerCursos(periodoID int64) ([]dto.CursoPeriodoDTO, error)
 }
 
 type AlumnoRepository interface {
