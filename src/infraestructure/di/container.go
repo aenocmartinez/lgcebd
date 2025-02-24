@@ -14,6 +14,7 @@ type Container struct {
 	userRepo    *dao.UserDao
 	cursoRepo   *dao.CursoDao
 	periodoRepo *dao.PeriodoDao
+	alumnoRepo  *dao.AlumnoDao
 }
 
 var (
@@ -29,6 +30,7 @@ func GetContainer() *Container {
 			userRepo:    dao.NewUserDao(db),
 			cursoRepo:   dao.NewCursoDao(db),
 			periodoRepo: dao.NewPeriodoDao(db),
+			alumnoRepo:  dao.NewAlumnoDao(db),
 		}
 	})
 	return instance
@@ -44,4 +46,8 @@ func (c *Container) GetCursoRepository() *dao.CursoDao {
 
 func (c *Container) GetPeriodoRepository() *dao.PeriodoDao {
 	return c.periodoRepo
+}
+
+func (c *Container) GetAlumnoRepository() *dao.AlumnoDao {
+	return c.alumnoRepo
 }
