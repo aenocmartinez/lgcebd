@@ -61,6 +61,15 @@ func main() {
 			alumnoGroup.DELETE("/:id", controller.EliminarAlumno)
 			alumnoGroup.POST("/:id/matriculas", controller.MatricularAlumno)
 		}
+
+		maestroGroup := protected.Group("/maestros")
+		{
+			maestroGroup.GET("/", controller.ListarMaestros)
+			maestroGroup.POST("/", controller.CrearMaestro)
+			maestroGroup.PUT("/:id", controller.ActualizarMaestro)
+			maestroGroup.DELETE("/:id", controller.EliminarMaestro)
+		}
+
 	}
 
 	r.Run(":8585")
