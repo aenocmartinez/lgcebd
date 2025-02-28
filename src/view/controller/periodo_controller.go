@@ -104,3 +104,41 @@ func ListarAlumnosMatriculados(c *gin.Context) {
 	response := useCase.Execute(periodoID, cursoID)
 	c.JSON(response.StatusCode, response)
 }
+
+func AgregarContenidoTematico(c *gin.Context) {
+	var req formrequest.AgregarContenidoTematicoFormRequest
+	periodoID, err := shared.ConvertStringToID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID de periodo inválido", nil))
+		return
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "Datos de entrada inválidos", nil))
+		return
+	}
+
+	agregarContenidoTematico := usecase.NewAgregarContenidoTematicoUseCase(di.GetContainer().GetContenidoTematicoRepository(), di.GetContainer().GetCursoPeriodoRepository())
+	resposne := agregarContenidoTematico.Execute(periodoID, req.Descripcion)
+
+	c.JSON(resposne.StatusCode, resposne)
+}
+
+func QuitarContenidoTematico(c *gin.Context) {
+	periodoID, err := shared.ConvertStringToID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID de periodo inválido", nil))
+		return
+	}
+
+	contenidoTematicoID, err := shared.ConvertStringToID(c.Param("contenido_tematico_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID de contenido temático inválido", nil))
+		return
+	}
+
+	quitarContenidoTematico := usecase.NewQuitarContenidoTematicoUseCase(di.GetContainer().GetContenidoTematicoRepository(), di.GetContainer().GetCursoPeriodoRepository())
+	resposne := quitarContenidoTematico.Execute(periodoID, contenidoTematicoID)
+
+	c.JSON(resposne.StatusCode, resposne)
+}

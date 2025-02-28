@@ -10,16 +10,17 @@ import (
 )
 
 type Container struct {
-	db               *gorm.DB
-	userRepo         *dao.UserDao
-	cursoRepo        *dao.CursoDao
-	periodoRepo      *dao.PeriodoDao
-	alumnoRepo       *dao.AlumnoDao
-	cursoPeriodoRepo *dao.CursoPeriodoDao
-	matriculaRepo    *dao.MatriculaDao
-	maestroRepo      *dao.MaestroDao
-	celebracionRepo  *dao.CelebracionDao
-	grupoRepo        *dao.GrupoDao
+	db                    *gorm.DB
+	userRepo              *dao.UserDao
+	cursoRepo             *dao.CursoDao
+	periodoRepo           *dao.PeriodoDao
+	alumnoRepo            *dao.AlumnoDao
+	cursoPeriodoRepo      *dao.CursoPeriodoDao
+	matriculaRepo         *dao.MatriculaDao
+	maestroRepo           *dao.MaestroDao
+	celebracionRepo       *dao.CelebracionDao
+	grupoRepo             *dao.GrupoDao
+	contenidoTematicoRepo *dao.ContenidoTematicoDao
 }
 
 var (
@@ -31,16 +32,17 @@ func GetContainer() *Container {
 	once.Do(func() {
 		db := database.GetDB()
 		instance = &Container{
-			db:               db,
-			userRepo:         dao.NewUserDao(db),
-			cursoRepo:        dao.NewCursoDao(db),
-			periodoRepo:      dao.NewPeriodoDao(db),
-			alumnoRepo:       dao.NewAlumnoDao(db),
-			cursoPeriodoRepo: dao.NewCursoPeriodoDao(db),
-			matriculaRepo:    dao.NewMatriculaDao(db),
-			maestroRepo:      dao.NewMaestroDao(db),
-			celebracionRepo:  dao.NewCelebracionDao(db),
-			grupoRepo:        dao.NewGrupoDao(db),
+			db:                    db,
+			userRepo:              dao.NewUserDao(db),
+			cursoRepo:             dao.NewCursoDao(db),
+			periodoRepo:           dao.NewPeriodoDao(db),
+			alumnoRepo:            dao.NewAlumnoDao(db),
+			cursoPeriodoRepo:      dao.NewCursoPeriodoDao(db),
+			matriculaRepo:         dao.NewMatriculaDao(db),
+			maestroRepo:           dao.NewMaestroDao(db),
+			celebracionRepo:       dao.NewCelebracionDao(db),
+			grupoRepo:             dao.NewGrupoDao(db),
+			contenidoTematicoRepo: dao.NewContenidoTematicoDao(db),
 		}
 	})
 	return instance
@@ -80,4 +82,8 @@ func (c *Container) GetCelebracionRepository() *dao.CelebracionDao {
 
 func (c *Container) GetGrupoRepository() *dao.GrupoDao {
 	return c.grupoRepo
+}
+
+func (c *Container) GetContenidoTematicoRepository() *dao.ContenidoTematicoDao {
+	return c.contenidoTematicoRepo
 }

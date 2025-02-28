@@ -45,6 +45,8 @@ type AlumnoRepository interface {
 type CursoPeriodoRepository interface {
 	FindByPeriodoYCurso(periodoID, cursoID int64) (*CursoPeriodo, error)
 	ObtenerCursosPorPeriodo(periodoID int64) ([]dto.CursoPeriodoDTO, error)
+	AgregarContenidoTematico(cursoPeriodoID int64, contenidoTematico *ContenidoTematico) error
+	QuitarContenidoTematico(cursoPeriodoID int64, contenidoTematicoID int64) error
 	FindByID(id int64) *CursoPeriodo
 }
 
@@ -83,4 +85,13 @@ type GrupoRepository interface {
 	AgregarMaestro(grupoID int64, maestroID int64) error
 	QuitarMaestros(grupoID int64) error
 	ListarMaestros(grupoID int64) []GrupoMaestro
+}
+
+type ContenidoTematicoRepository interface {
+	FindByID(id int64) *ContenidoTematico
+	FindByDescripcion(cursoPeriodoID int64, descripcion string) *ContenidoTematico
+	Save(conteniodoTematico *ContenidoTematico) error
+	Update(conteniodoTematico *ContenidoTematico) error
+	Delete(id int64) error
+	List() []ContenidoTematico
 }

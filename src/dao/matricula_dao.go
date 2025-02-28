@@ -34,7 +34,7 @@ func (r *MatriculaDao) FindByID(id int64) (*domain.Matricula, error) {
 	alumno := domain.NewAlumno(nil)
 	alumno.SetID(matriculaData.AlumnoID)
 
-	cursoPeriodo := domain.NewCursoPeriodoEmpty()
+	cursoPeriodo := domain.NewCursoPeriodoEmpty(nil)
 	cursoPeriodo.SetID(matriculaData.CursoPeriodoID)
 
 	return domain.NewMatricula(matriculaData.ID, alumno, cursoPeriodo), nil
@@ -76,7 +76,7 @@ func (r *MatriculaDao) ObtenerMatriculasPorAlumno(alumnoID int64) ([]domain.Matr
 		alumno := domain.NewAlumno(nil)
 		alumno.SetID(m.AlumnoID)
 
-		cursoPeriodo := domain.NewCursoPeriodoEmpty()
+		cursoPeriodo := domain.NewCursoPeriodoEmpty(nil)
 		cursoPeriodo.SetID(m.CursoPeriodoID)
 
 		matriculas = append(matriculas, *domain.NewMatricula(m.ID, alumno, cursoPeriodo))
@@ -134,7 +134,7 @@ func (r *MatriculaDao) ObtenerMatriculasPorCursoPeriodo(cursoPeriodoID int64) ([
 		alumno.SetAcudienteTelefono(data.AcudienteTelefono)
 		alumno.SetDireccion(data.Direccion)
 
-		cursoPeriodo := domain.NewCursoPeriodoEmpty()
+		cursoPeriodo := domain.NewCursoPeriodoEmpty(nil)
 		cursoPeriodo.SetID(data.CursoPeriodoID)
 
 		matricula := domain.NewMatricula(data.ID, alumno, cursoPeriodo)

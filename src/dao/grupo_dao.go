@@ -55,7 +55,7 @@ func (r *GrupoDao) FindByID(id int64) *domain.Grupo {
 	grupo.SetID(grupoData.ID)
 	grupo.SetCelebracion(domain.NewCelebracion(nil))
 	grupo.GetCelebracion().SetID(grupoData.CelebracionID)
-	grupo.SetCursoPeriodo(domain.NewCursoPeriodoEmpty())
+	grupo.SetCursoPeriodo(domain.NewCursoPeriodoEmpty(nil))
 	grupo.GetCursoPeriodo().SetID(grupoData.PeriodoCursoID)
 
 	return grupo
@@ -72,7 +72,7 @@ func (r *GrupoDao) FindByCursoPeriodoYCelebracion(cursoPeriodoID, celebracionID 
 	grupo.SetID(grupoData.ID)
 	grupo.SetCelebracion(domain.NewCelebracion(nil))
 	grupo.GetCelebracion().SetID(grupoData.CelebracionID)
-	grupo.SetCursoPeriodo(domain.NewCursoPeriodoEmpty())
+	grupo.SetCursoPeriodo(domain.NewCursoPeriodoEmpty(nil))
 	grupo.GetCursoPeriodo().SetID(grupoData.PeriodoCursoID)
 
 	return grupo

@@ -19,8 +19,10 @@ func NewCursoPeriodo(id int64, curso *Curso, periodo *Periodo) *CursoPeriodo {
 	}
 }
 
-func NewCursoPeriodoEmpty() *CursoPeriodo {
-	return &CursoPeriodo{}
+func NewCursoPeriodoEmpty(repository CursoPeriodoRepository) *CursoPeriodo {
+	return &CursoPeriodo{
+		repository: repository,
+	}
 }
 
 func (cp *CursoPeriodo) SetRepository(repository CursoPeriodoRepository) {
@@ -67,6 +69,16 @@ func (cp *CursoPeriodo) GetPeriodoID() int64 {
 
 func (cp *CursoPeriodo) Existe() bool {
 	return cp.id > 0
+}
+
+func (cp *CursoPeriodo) AgregarContenidoTematico(descripcion string) error {
+	contenidoTematico := NewContenidoTematico(nil)
+	contenidoTematico.SetDescripcion(descripcion)
+	return cp.repository.AgregarContenidoTematico(cp.id, contenidoTematico)
+}
+
+func (cp *CursoPeriodo) QuitarContenidoTematico(contenidoTematico *ContenidoTematico) error {
+	return cp.repository.QuitarContenidoTematico(cp.id, contenidoTematico.GetID())
 }
 
 func (cp *CursoPeriodo) ToDTO() dto.ItemCursoPeriodoDTO {

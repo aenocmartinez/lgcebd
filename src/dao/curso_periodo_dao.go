@@ -3,6 +3,7 @@ package dao
 import (
 	"ebd/src/domain"
 	"ebd/src/view/dto"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -30,7 +31,7 @@ func (r *CursoPeriodoDao) FindByPeriodoYCurso(periodoID, cursoID int64) (*domain
 
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			return domain.NewCursoPeriodoEmpty(), nil
+			return domain.NewCursoPeriodoEmpty(r), nil
 		}
 		return nil, result.Error
 	}
@@ -100,9 +101,9 @@ func (r *CursoPeriodoDao) FindByID(id int64) *domain.CursoPeriodo {
 
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			return domain.NewCursoPeriodoEmpty()
+			return domain.NewCursoPeriodoEmpty(r)
 		}
-		return domain.NewCursoPeriodoEmpty()
+		return domain.NewCursoPeriodoEmpty(r)
 	}
 
 	curso := domain.NewCurso(nil)
@@ -117,5 +118,33 @@ func (r *CursoPeriodoDao) FindByID(id int64) *domain.CursoPeriodo {
 	periodo.SetFechaInicio(data.FechaInicio)
 	periodo.SetFechaFin(data.FechaFin)
 
-	return domain.NewCursoPeriodo(data.ID, curso, periodo)
+	cursoPeriodo := domain.NewCursoPeriodo(data.ID, curso, periodo)
+	cursoPeriodo.SetRepository(r)
+
+	return cursoPeriodo
+}
+
+func (r *CursoPeriodoDao) AgregarContenidoTematico(cursoPeriodoID int64, contenidoTematico *domain.ContenidoTematico) error {
+	contenidoData := struct {
+		Descripcion    string `gorm:"column:descripcion"`
+		PeriodoCursoID int64  `gorm:"column:periodo_curso_id"`
+	}{
+		Descripcion:    contenidoTematico.GetDescripcion(),
+		PeriodoCursoID: cursoPeriodoID,
+	}
+
+	result := r.db.Table("contenido_tematico").Create(&contenidoData)
+	if result.Error != nil {
+		fmt.Println(result)
+		return result.Error
+	}
+
+	contenidoTematico.SetCursoPeriodo(domain.NewCursoPeriodoEmpty(nil))
+	contenidoTematico.GetCursoPeriodo().SetID(cursoPeriodoID)
+
+	return nil
+}
+
+func (r *CursoPeriodoDao) QuitarContenidoTematico(cursoPeriodoID int64, contenidoTematicoID int64) error {
+	return r.db.Table("contenido_tematico").Where("periodo_curso_id = ? AND id = ?", cursoPeriodoID, contenidoTematicoID).Delete(nil).Error
 }
