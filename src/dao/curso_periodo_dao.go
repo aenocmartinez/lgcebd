@@ -73,7 +73,7 @@ func (r *CursoPeriodoDao) ObtenerCursosPorPeriodo(periodoID int64) ([]dto.CursoP
 	return cursosDTO, nil
 }
 
-func (r *CursoPeriodoDao) FindByID(id int64) (*domain.CursoPeriodo, error) {
+func (r *CursoPeriodoDao) FindByID(id int64) *domain.CursoPeriodo {
 	var data struct {
 		ID            int64  `gorm:"column:id"`
 		CursoID       int64  `gorm:"column:curso_id"`
@@ -100,9 +100,9 @@ func (r *CursoPeriodoDao) FindByID(id int64) (*domain.CursoPeriodo, error) {
 
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			return domain.NewCursoPeriodoEmpty(), nil
+			return domain.NewCursoPeriodoEmpty()
 		}
-		return domain.NewCursoPeriodoEmpty(), result.Error
+		return domain.NewCursoPeriodoEmpty()
 	}
 
 	curso := domain.NewCurso(nil)
@@ -117,5 +117,5 @@ func (r *CursoPeriodoDao) FindByID(id int64) (*domain.CursoPeriodo, error) {
 	periodo.SetFechaInicio(data.FechaInicio)
 	periodo.SetFechaFin(data.FechaFin)
 
-	return domain.NewCursoPeriodo(data.ID, curso, periodo), nil
+	return domain.NewCursoPeriodo(data.ID, curso, periodo)
 }

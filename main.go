@@ -78,6 +78,12 @@ func main() {
 			celebracionGroup.DELETE("/:id", controller.EliminarCelebracion)
 		}
 
+		grupoGroup := protected.Group("/grupos")
+		{
+			grupoGroup.GET("/", controller.ListarGrupos)
+			grupoGroup.POST("/", controller.CrearGrupo)
+		}
+
 	}
 
 	r.Run(":8585")

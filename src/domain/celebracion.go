@@ -1,6 +1,8 @@
 package domain
 
-import "ebd/src/view/dto"
+import (
+	"ebd/src/view/dto"
+)
 
 type Celebracion struct {
 	id         int64

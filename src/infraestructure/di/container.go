@@ -19,6 +19,7 @@ type Container struct {
 	matriculaRepo    *dao.MatriculaDao
 	maestroRepo      *dao.MaestroDao
 	celebracionRepo  *dao.CelebracionDao
+	grupoRepo        *dao.GrupoDao
 }
 
 var (
@@ -39,6 +40,7 @@ func GetContainer() *Container {
 			matriculaRepo:    dao.NewMatriculaDao(db),
 			maestroRepo:      dao.NewMaestroDao(db),
 			celebracionRepo:  dao.NewCelebracionDao(db),
+			grupoRepo:        dao.NewGrupoDao(db),
 		}
 	})
 	return instance
@@ -74,4 +76,8 @@ func (c *Container) GetMaestroRepository() *dao.MaestroDao {
 
 func (c *Container) GetCelebracionRepository() *dao.CelebracionDao {
 	return c.celebracionRepo
+}
+
+func (c *Container) GetGrupoRepository() *dao.GrupoDao {
+	return c.grupoRepo
 }

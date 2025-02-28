@@ -22,14 +22,14 @@ type maestroDB struct {
 	Estado          string `gorm:"column:estado"`
 }
 
-func (r *MaestroDao) FindByID(id int64) (*domain.Maestro, error) {
+func (r *MaestroDao) FindByID(id int64) *domain.Maestro {
 	var maestroData maestroDB
 	result := r.db.Table("maestros").Where("id = ?", id).First(&maestroData)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			return domain.NewMaestro(nil), nil
+			return domain.NewMaestro(r)
 		}
-		return nil, result.Error
+		return domain.NewMaestro(r)
 	}
 
 	maestro := domain.NewMaestro(r)
@@ -39,7 +39,7 @@ func (r *MaestroDao) FindByID(id int64) (*domain.Maestro, error) {
 	maestro.SetFechaNacimiento(maestroData.FechaNacimiento)
 	maestro.SetEstado(maestroData.Estado)
 
-	return maestro, nil
+	return maestro
 }
 
 func (r *MaestroDao) List() ([]domain.Maestro, error) {

@@ -33,9 +33,9 @@ func (u *MatricularAlumnoUseCase) Execute(alumnoID, cursoPeriodoID int64) shared
 		return shared.NewAPIResponse(404, "El alumno no existe", nil)
 	}
 
-	cursoPeriodo, err := u.cursoPeriodoRepo.FindByID(cursoPeriodoID)
-	if err != nil {
-		return shared.NewAPIResponse(500, "Error al buscar el curso en el periodo", nil)
+	cursoPeriodo := u.cursoPeriodoRepo.FindByID(cursoPeriodoID)
+	if !cursoPeriodo.Existe() {
+		return shared.NewAPIResponse(500, "Curso  no encontrado", nil)
 	}
 	if !cursoPeriodo.Existe() {
 		return shared.NewAPIResponse(404, "El curso en el periodo no existe", nil)

@@ -16,13 +16,9 @@ func NewActualizarMaestroUseCase(maestroRepo domain.MaestroRepository) *Actualiz
 
 func (u *ActualizarMaestroUseCase) Execute(id int64, maestroDTO dto.MaestroDTO) shared.APIResponse {
 
-	maestro, err := u.maestroRepo.FindByID(id)
-	if err != nil {
-		return shared.NewAPIResponse(500, "Error al buscar el maestro", nil)
-	}
-
-	if !maestro.Existe() {
-		return shared.NewAPIResponse(404, "El maestro no existe", nil)
+	maestro := u.maestroRepo.FindByID(id)
+	if maestro.Existe() {
+		return shared.NewAPIResponse(404, "Maestro no encontrado", nil)
 	}
 
 	maestro.SetNombre(maestroDTO.Nombre)
@@ -30,7 +26,7 @@ func (u *ActualizarMaestroUseCase) Execute(id int64, maestroDTO dto.MaestroDTO) 
 	maestro.SetFechaNacimiento(maestroDTO.FechaNacimiento)
 	maestro.SetEstado(maestroDTO.Estado)
 
-	err = u.maestroRepo.Update(maestro)
+	err := u.maestroRepo.Update(maestro)
 	if err != nil {
 		return shared.NewAPIResponse(500, "Error al actualizar el maestro", nil)
 	}

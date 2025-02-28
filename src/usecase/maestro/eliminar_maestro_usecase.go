@@ -14,15 +14,12 @@ func NewEliminarMaestroUseCase(maestroRepo domain.MaestroRepository) *EliminarMa
 }
 
 func (u *EliminarMaestroUseCase) Execute(id int64) shared.APIResponse {
-	maestro, err := u.maestroRepo.FindByID(id)
-	if err != nil {
-		return shared.NewAPIResponse(500, "Error al buscar el maestro", nil)
-	}
+	maestro := u.maestroRepo.FindByID(id)
 	if !maestro.Existe() {
-		return shared.NewAPIResponse(404, "El maestro no existe", nil)
+		return shared.NewAPIResponse(500, "Maestro no encontrado", nil)
 	}
 
-	err = u.maestroRepo.Delete(id)
+	err := u.maestroRepo.Delete(id)
 	if err != nil {
 		return shared.NewAPIResponse(500, "Error al eliminar el maestro", nil)
 	}

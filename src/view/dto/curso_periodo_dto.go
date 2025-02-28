@@ -9,3 +9,9 @@ type CursoPeriodoDTO struct {
 	EdadMaxima int    `json:"edad_maxima"`
 	Estado     string `json:"estado"`
 }
+
+type ItemCursoPeriodoDTO struct {
+	ID      int64      `json:"curso_periodo_id"`
+	Periodo PeriodoDTO `json:"periodo"`
+	Curso   CursoDTO   `json:"curso"`
+}

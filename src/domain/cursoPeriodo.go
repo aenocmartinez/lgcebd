@@ -1,9 +1,14 @@
 package domain
 
+import (
+	"ebd/src/view/dto"
+)
+
 type CursoPeriodo struct {
-	id      int64
-	curso   *Curso
-	periodo *Periodo
+	id         int64
+	curso      *Curso
+	periodo    *Periodo
+	repository CursoPeriodoRepository
 }
 
 func NewCursoPeriodo(id int64, curso *Curso, periodo *Periodo) *CursoPeriodo {
@@ -16,6 +21,10 @@ func NewCursoPeriodo(id int64, curso *Curso, periodo *Periodo) *CursoPeriodo {
 
 func NewCursoPeriodoEmpty() *CursoPeriodo {
 	return &CursoPeriodo{}
+}
+
+func (cp *CursoPeriodo) SetRepository(repository CursoPeriodoRepository) {
+	cp.repository = repository
 }
 
 func (cp *CursoPeriodo) SetID(id int64) {
@@ -58,4 +67,12 @@ func (cp *CursoPeriodo) GetPeriodoID() int64 {
 
 func (cp *CursoPeriodo) Existe() bool {
 	return cp.id > 0
+}
+
+func (cp *CursoPeriodo) ToDTO() dto.ItemCursoPeriodoDTO {
+	return dto.ItemCursoPeriodoDTO{
+		ID:      cp.id,
+		Periodo: *cp.periodo.ToDTO(),
+		Curso:   *cp.curso.ToDTO(),
+	}
 }

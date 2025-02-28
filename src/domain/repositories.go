@@ -45,7 +45,7 @@ type AlumnoRepository interface {
 type CursoPeriodoRepository interface {
 	FindByPeriodoYCurso(periodoID, cursoID int64) (*CursoPeriodo, error)
 	ObtenerCursosPorPeriodo(periodoID int64) ([]dto.CursoPeriodoDTO, error)
-	FindByID(id int64) (*CursoPeriodo, error)
+	FindByID(id int64) *CursoPeriodo
 }
 
 type MatriculaRepository interface {
@@ -57,7 +57,7 @@ type MatriculaRepository interface {
 }
 
 type MaestroRepository interface {
-	FindByID(id int64) (*Maestro, error)
+	FindByID(id int64) *Maestro
 	List() ([]Maestro, error)
 	Save(maestro *Maestro) error
 	Update(maestro *Maestro) error
@@ -71,4 +71,16 @@ type CelebracionRepository interface {
 	Update(celebracion *Celebracion) error
 	Delete(id int64) error
 	List() []Celebracion
+}
+
+type GrupoRepository interface {
+	FindByID(id int64) *Grupo
+	FindByCursoPeriodoYCelebracion(cursoPeriodoID, celebracionID int64) *Grupo
+	Save(grupo *Grupo) error
+	Update(grupo *Grupo) error
+	Delete(id int64) error
+	List() []Grupo
+	AgregarMaestro(grupoID int64, maestroID int64) error
+	QuitarMaestros(grupoID int64) error
+	ListarMaestros(grupoID int64) []GrupoMaestro
 }
