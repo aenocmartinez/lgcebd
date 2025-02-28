@@ -63,3 +63,12 @@ type MaestroRepository interface {
 	Update(maestro *Maestro) error
 	Delete(id int64) error
 }
+
+type CelebracionRepository interface {
+	FindByID(id int64) *Celebracion
+	FindByNombre(nombre string) *Celebracion
+	Save(celebracion *Celebracion) error
+	Update(celebracion *Celebracion) error
+	Delete(id int64) error
+	List() []Celebracion
+}

@@ -70,6 +70,14 @@ func main() {
 			maestroGroup.DELETE("/:id", controller.EliminarMaestro)
 		}
 
+		celebracionGroup := protected.Group("/celebraciones")
+		{
+			celebracionGroup.GET("/", controller.ListarCelebraciones)
+			celebracionGroup.POST("/", controller.CrearCelebracion)
+			celebracionGroup.PUT("/:id", controller.ActualizarCelebracion)
+			celebracionGroup.DELETE("/:id", controller.EliminarCelebracion)
+		}
+
 	}
 
 	r.Run(":8585")
