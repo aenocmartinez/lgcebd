@@ -82,6 +82,7 @@ func main() {
 		{
 			grupoGroup.GET("/", controller.ListarGrupos)
 			grupoGroup.POST("/", controller.CrearGrupo)
+			grupoGroup.PUT("/:id", controller.ActualizarGrupo)
 		}
 
 	}

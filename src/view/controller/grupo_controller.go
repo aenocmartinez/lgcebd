@@ -36,6 +36,38 @@ func CrearGrupo(c *gin.Context) {
 
 }
 
+func ActualizarGrupo(c *gin.Context) {
+	var req formrequest.GrupoFormRequest
+
+	id, err := shared.ConvertStringToID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID inválido", nil))
+		return
+	}
+
+	err = c.ShouldBindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "Datos de entrada no válidos", nil))
+		return
+	}
+
+	datos := dto.GuardarGrupoDto{
+		CelebracionID:  req.CelebracionID,
+		CursoPeriodoID: req.CursoPeriodoID,
+		Maestros:       req.Maestros,
+	}
+
+	actualizarGrupo := usecase.NewActualizarGrupoUseCase(di.GetContainer().GetGrupoRepository(),
+		di.GetContainer().GetCelebracionRepository(),
+		di.GetContainer().GetCursoPeriodoRepository(),
+		di.GetContainer().GetMaestroRepository())
+
+	response := actualizarGrupo.Execute(id, datos)
+
+	c.JSON(response.StatusCode, response)
+
+}
+
 func ListarGrupos(c *gin.Context) {
 	listarGrupos := usecase.NewListarGruposUseCase(di.GetContainer().GetGrupoRepository(),
 		di.GetContainer().GetCelebracionRepository(),
