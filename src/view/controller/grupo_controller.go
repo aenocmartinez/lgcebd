@@ -68,6 +68,20 @@ func ActualizarGrupo(c *gin.Context) {
 
 }
 
+func EliminarGrupo(c *gin.Context) {
+	id, err := shared.ConvertStringToID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID inválido", nil))
+		return
+	}
+
+	eliminarGrupo := usecase.NewEliminarGrupoUseCase(di.GetContainer().GetGrupoRepository())
+
+	response := eliminarGrupo.Execute(id)
+	c.JSON(response.StatusCode, response)
+
+}
+
 func ListarGrupos(c *gin.Context) {
 	listarGrupos := usecase.NewListarGruposUseCase(di.GetContainer().GetGrupoRepository(),
 		di.GetContainer().GetCelebracionRepository(),
