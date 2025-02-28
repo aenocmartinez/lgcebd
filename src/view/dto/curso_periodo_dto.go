@@ -11,7 +11,7 @@ type CursoPeriodoDTO struct {
 }
 
 type ItemCursoPeriodoDTO struct {
-	ID      int64      `json:"curso_periodo_id"`
-	Periodo PeriodoDTO `json:"periodo"`
-	Curso   CursoDTO   `json:"curso"`
+	ID      int64      `json:"curso_periodo_id,omitempty"`
+	Periodo PeriodoDTO `json:"periodo,omitempty"`
+	Curso   CursoDTO   `json:"curso,omitempty"`
 }

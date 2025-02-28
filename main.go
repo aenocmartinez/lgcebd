@@ -53,6 +53,7 @@ func main() {
 			periodoGroup.GET("/:id/cursos/:curso_id/alumnos", controller.ListarAlumnosMatriculados)
 			periodoGroup.POST("/curso-periodo/:id/contenido-tematico", controller.AgregarContenidoTematico)
 			periodoGroup.DELETE("/curso-periodo/:id/contenido-tematico/:contenido_tematico_id", controller.QuitarContenidoTematico)
+			periodoGroup.GET("/curso-periodo/:id/contenido-tematico", controller.ObtenerContenidoTematicoDeUnCursoPeriodo)
 		}
 
 		alumnoGroup := protected.Group("/alumnos")

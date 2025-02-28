@@ -119,9 +119,9 @@ func AgregarContenidoTematico(c *gin.Context) {
 	}
 
 	agregarContenidoTematico := usecase.NewAgregarContenidoTematicoUseCase(di.GetContainer().GetContenidoTematicoRepository(), di.GetContainer().GetCursoPeriodoRepository())
-	resposne := agregarContenidoTematico.Execute(periodoID, req.Descripcion)
+	response := agregarContenidoTematico.Execute(periodoID, req.Descripcion)
 
-	c.JSON(resposne.StatusCode, resposne)
+	c.JSON(response.StatusCode, response)
 }
 
 func QuitarContenidoTematico(c *gin.Context) {
@@ -138,7 +138,21 @@ func QuitarContenidoTematico(c *gin.Context) {
 	}
 
 	quitarContenidoTematico := usecase.NewQuitarContenidoTematicoUseCase(di.GetContainer().GetContenidoTematicoRepository(), di.GetContainer().GetCursoPeriodoRepository())
-	resposne := quitarContenidoTematico.Execute(periodoID, contenidoTematicoID)
+	response := quitarContenidoTematico.Execute(periodoID, contenidoTematicoID)
 
-	c.JSON(resposne.StatusCode, resposne)
+	c.JSON(response.StatusCode, response)
+}
+
+func ObtenerContenidoTematicoDeUnCursoPeriodo(c *gin.Context) {
+
+	periodoID, err := shared.ConvertStringToID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID de periodo inválido", nil))
+		return
+	}
+
+	obtenerContenidoTematico := usecase.NewListarContenidoTematicoDeUnCursoPeriodoUseCase(di.GetContainer().GetContenidoTematicoRepository(), di.GetContainer().GetCursoPeriodoRepository())
+	response := obtenerContenidoTematico.Execute(periodoID)
+
+	c.JSON(response.StatusCode, response)
 }

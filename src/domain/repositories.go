@@ -47,6 +47,7 @@ type CursoPeriodoRepository interface {
 	ObtenerCursosPorPeriodo(periodoID int64) ([]dto.CursoPeriodoDTO, error)
 	AgregarContenidoTematico(cursoPeriodoID int64, contenidoTematico *ContenidoTematico) error
 	QuitarContenidoTematico(cursoPeriodoID int64, contenidoTematicoID int64) error
+	ListarContenidoTematico(cursoPeriodoID int64) []ContenidoTematico
 	FindByID(id int64) *CursoPeriodo
 }
 

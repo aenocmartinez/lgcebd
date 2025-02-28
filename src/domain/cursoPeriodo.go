@@ -81,6 +81,10 @@ func (cp *CursoPeriodo) QuitarContenidoTematico(contenidoTematico *ContenidoTema
 	return cp.repository.QuitarContenidoTematico(cp.id, contenidoTematico.GetID())
 }
 
+func (cp *CursoPeriodo) ContenidoTematico() []ContenidoTematico {
+	return cp.repository.ListarContenidoTematico(cp.id)
+}
+
 func (cp *CursoPeriodo) ToDTO() dto.ItemCursoPeriodoDTO {
 	return dto.ItemCursoPeriodoDTO{
 		ID:      cp.id,

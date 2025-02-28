@@ -148,3 +148,28 @@ func (r *CursoPeriodoDao) AgregarContenidoTematico(cursoPeriodoID int64, conteni
 func (r *CursoPeriodoDao) QuitarContenidoTematico(cursoPeriodoID int64, contenidoTematicoID int64) error {
 	return r.db.Table("contenido_tematico").Where("periodo_curso_id = ? AND id = ?", cursoPeriodoID, contenidoTematicoID).Delete(nil).Error
 }
+
+func (r *CursoPeriodoDao) ListarContenidoTematico(cursoPeriodoID int64) []domain.ContenidoTematico {
+	var contenidoData []struct {
+		ID             int64  `gorm:"column:id"`
+		Descripcion    string `gorm:"column:descripcion"`
+		PeriodoCursoID int64  `gorm:"column:periodo_curso_id"`
+	}
+
+	result := r.db.Table("contenido_tematico").Where("periodo_curso_id = ?", cursoPeriodoID).Find(&contenidoData)
+	if result.Error != nil {
+		return []domain.ContenidoTematico{}
+	}
+
+	contenidos := []domain.ContenidoTematico{}
+	for _, data := range contenidoData {
+		contenido := domain.NewContenidoTematico(nil)
+		contenido.SetID(data.ID)
+		contenido.SetDescripcion(data.Descripcion)
+		contenido.SetCursoPeriodo(domain.NewCursoPeriodoEmpty(r))
+		contenido.GetCursoPeriodo().SetID(data.PeriodoCursoID)
+		contenidos = append(contenidos, *contenido)
+	}
+
+	return contenidos
+}
