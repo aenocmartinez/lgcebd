@@ -14,7 +14,9 @@ RUN go mod download
 COPY . .
 
 # 6️⃣ Compilar la aplicación correctamente
-RUN go build -o main .
+#RUN go build -o main .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -tags netgo -ldflags="-s -w -extldflags '-static'" -o main .
+
 
 # 7️⃣ Crear una imagen más liviana sin Golang
 FROM debian:bullseye-slim

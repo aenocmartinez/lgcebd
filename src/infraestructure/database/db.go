@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"sync"
@@ -18,6 +19,7 @@ var (
 
 func GetDB() *gorm.DB {
 	once.Do(func() {
+		fmt.Println("DB_USER: ", os.Getenv("DB_USER"))
 		dsn := os.Getenv("DB_USER") + ":" + os.Getenv("DB_PASSWORD") +
 			"@tcp(" + os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT") + ")/" +
 			os.Getenv("DB_NAME") + "?parseTime=true"

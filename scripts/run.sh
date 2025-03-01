@@ -7,7 +7,7 @@ CONTAINER_NAME="lgcebd-container"
 # Función para compilar correctamente en la máquina host
 compile() {
     echo "🔄 Compilando código Go para Linux..."
-    GOOS=linux GOARCH=amd64 go build -o main .
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -tags netgo -ldflags="-s -w -extldflags '-static'" -o main .
 }
 
 # 🔄 Función para limpiar logs del contenedor
