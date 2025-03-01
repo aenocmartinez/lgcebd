@@ -89,6 +89,11 @@ func main() {
 			grupoGroup.DELETE("/:id", controller.EliminarGrupo)
 		}
 
+		claseGroup := protected.Group("/clases")
+		{
+			claseGroup.POST("/asistencia", controller.RegistrarAsistencia)
+		}
+
 	}
 
 	r.Run(":8585")

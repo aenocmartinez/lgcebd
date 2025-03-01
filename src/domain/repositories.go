@@ -96,3 +96,12 @@ type ContenidoTematicoRepository interface {
 	Delete(id int64) error
 	List() []ContenidoTematico
 }
+
+type ClaseRepository interface {
+	FindByID(id int64) *Clase
+	FindByGrupoFecha(grupoID int64, fecha string) *Clase
+	List() ([]Clase, error)
+	Save(clase *Clase) error
+	Update(clase *Clase) error
+	Delete(claseID int64) error
+}

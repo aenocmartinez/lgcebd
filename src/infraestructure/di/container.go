@@ -21,6 +21,7 @@ type Container struct {
 	celebracionRepo       *dao.CelebracionDao
 	grupoRepo             *dao.GrupoDao
 	contenidoTematicoRepo *dao.ContenidoTematicoDao
+	claseRepo             *dao.ClaseDao
 }
 
 var (
@@ -43,6 +44,7 @@ func GetContainer() *Container {
 			celebracionRepo:       dao.NewCelebracionDao(db),
 			grupoRepo:             dao.NewGrupoDao(db),
 			contenidoTematicoRepo: dao.NewContenidoTematicoDao(db),
+			claseRepo:             dao.NewClaseDao(db),
 		}
 	})
 	return instance
@@ -86,4 +88,8 @@ func (c *Container) GetGrupoRepository() *dao.GrupoDao {
 
 func (c *Container) GetContenidoTematicoRepository() *dao.ContenidoTematicoDao {
 	return c.contenidoTematicoRepo
+}
+
+func (c *Container) GetClaseRepository() *dao.ClaseDao {
+	return c.claseRepo
 }
