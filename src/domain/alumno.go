@@ -115,7 +115,6 @@ func (a *Alumno) TieneCursoMatriculado(periodoID int64) bool {
 }
 
 func (a *Alumno) CalcularEdad() int {
-	// Intentar parsear la fecha en formato completo con zona horaria UTC
 	fechaNacimiento, err := time.Parse(time.RFC3339, a.fechaNacimiento)
 	if err != nil {
 		log.Printf("Error al parsear fecha de nacimiento '%s': %v", a.fechaNacimiento, err)
@@ -125,7 +124,6 @@ func (a *Alumno) CalcularEdad() int {
 	hoy := time.Now()
 	edad := hoy.Year() - fechaNacimiento.Year()
 
-	// Ajustar si aún no ha cumplido años en el año actual
 	if hoy.YearDay() < fechaNacimiento.YearDay() {
 		edad--
 	}
