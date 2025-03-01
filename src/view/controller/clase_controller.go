@@ -24,12 +24,14 @@ func RegistrarAsistencia(c *gin.Context) {
 		Ofrenda:             req.Ofrenda,
 		GrupoID:             req.GrupoID,
 		ContenidoTematicoID: req.ContenidoTematicoID,
+		AlumnosMatriculados: req.AlumnosMatriculados,
 	}
 
 	registrarAsitencia := usecase.NewRegistrarAsistenciaUseCase(
 		di.GetContainer().GetClaseRepository(),
 		di.GetContainer().GetGrupoRepository(),
-		di.GetContainer().GetContenidoTematicoRepository())
+		di.GetContainer().GetContenidoTematicoRepository(),
+		di.GetContainer().GetMatriculaRepository())
 
 	response := registrarAsitencia.Execute(datos)
 

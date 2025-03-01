@@ -13,4 +13,5 @@ type GuardarClaseDTO struct {
 	Ofrenda             float64 `json:"ofrenda"`
 	GrupoID             int64   `json:"grupo_id"`
 	ContenidoTematicoID int64   `json:"contenido_tematico_id"`
+	AlumnosMatriculados []int64 `json:"alumnos_matriculados"`
 }

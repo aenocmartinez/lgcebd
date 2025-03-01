@@ -196,3 +196,8 @@ func (r *ClaseDao) Update(clase *domain.Clase) error {
 func (r *ClaseDao) Delete(claseID int64) error {
 	return r.db.Table("clases").Where("id = ?", claseID).Delete(nil).Error
 }
+
+func (r *ClaseDao) RegistrarAsistencia(claseID int64, matriculaID int64) error {
+	query := "INSERT INTO asistencias (clase_id, matricula_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE clase_id = clase_id"
+	return r.db.Exec(query, claseID, matriculaID).Error
+}

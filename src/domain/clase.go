@@ -73,6 +73,10 @@ func (c *Clase) Eliminar() error {
 	return c.repository.Delete(c.id)
 }
 
+func (c *Clase) RegistrarAsistencia(matricula *Matricula) error {
+	return c.repository.RegistrarAsistencia(c.id, matricula.id)
+}
+
 func (c *Clase) ToDTO() dto.ClaseDTO {
 	return dto.ClaseDTO{
 		ID:                c.id,

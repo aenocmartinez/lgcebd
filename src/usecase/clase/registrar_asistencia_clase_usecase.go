@@ -4,21 +4,25 @@ import (
 	"ebd/src/domain"
 	"ebd/src/shared"
 	"ebd/src/view/dto"
+	"log"
 )
 
 type RegistrarAsistenciaUseCase struct {
 	claseRepo             domain.ClaseRepository
 	grupoRepo             domain.GrupoRepository
 	contenidoTematicoRepo domain.ContenidoTematicoRepository
+	matriculaRepo         domain.MatriculaRepository
 }
 
 func NewRegistrarAsistenciaUseCase(claseRepo domain.ClaseRepository,
 	grupoRepo domain.GrupoRepository,
-	conteniodoTematicoRepo domain.ContenidoTematicoRepository) *RegistrarAsistenciaUseCase {
+	conteniodoTematicoRepo domain.ContenidoTematicoRepository,
+	matriculaRepo domain.MatriculaRepository) *RegistrarAsistenciaUseCase {
 	return &RegistrarAsistenciaUseCase{
 		claseRepo:             claseRepo,
 		grupoRepo:             grupoRepo,
 		contenidoTematicoRepo: conteniodoTematicoRepo,
+		matriculaRepo:         matriculaRepo,
 	}
 }
 
@@ -47,6 +51,20 @@ func (uc *RegistrarAsistenciaUseCase) Execute(datos dto.GuardarClaseDTO) shared.
 	err := clase.Crear()
 	if err != nil {
 		return shared.NewAPIResponse(500, "Ha ocurrido un error en el sistema", err.Error())
+	}
+
+	for _, alumnoMatriculadoID := range datos.AlumnosMatriculados {
+		matricula, err := uc.matriculaRepo.FindByID(alumnoMatriculadoID)
+		if err != nil {
+			log.Println("Error al consultar matrícula alumno: ", err.Error())
+			continue
+		}
+
+		err = clase.RegistrarAsistencia(matricula)
+		if err != nil {
+			log.Println("Error al agrega la asistencia: ", err.Error())
+			continue
+		}
 	}
 
 	return shared.NewAPIResponse(201, "Clase registrada correctamente.", nil)

@@ -12,6 +12,7 @@ type RegistrarAsitenciaFormRequest struct {
 	Ofrenda             float64 `json:"ofrenda" binding:"required,gte=0"`
 	GrupoID             int64   `json:"grupo_id" binding:"required"`
 	ContenidoTematicoID int64   `json:"contenido_tematico_id" binding:"required"`
+	AlumnosMatriculados []int64 `json:"alumnos_matriculados" binding:"required,dive,gt=0"`
 }
 
 func (r *RegistrarAsitenciaFormRequest) Validate(c *gin.Context) error {
@@ -25,11 +26,15 @@ func (r *RegistrarAsitenciaFormRequest) Validate(c *gin.Context) error {
 	}
 
 	if r.GrupoID <= 0 {
-		return errors.New("el ID del grupo debe ser válido")
+		return errors.New("wl ID del grupo debe ser válido")
 	}
 
 	if r.ContenidoTematicoID <= 0 {
-		return errors.New("el ID del contenido temático debe ser válido")
+		return errors.New("wl ID del contenido temático debe ser válido")
+	}
+
+	if len(r.AlumnosMatriculados) == 0 {
+		return errors.New("debe haber al menos un alumno matriculado")
 	}
 
 	return nil

@@ -57,6 +57,7 @@ type MatriculaRepository interface {
 	ObtenerMatriculasPorAlumno(alumnoID int64) ([]Matricula, error)
 	ObtenerMatriculasPorCursoPeriodo(cursoPeriodoID int64) ([]Matricula, error)
 	Delete(id int64) error
+	FindByID(matriculaID int64) (*Matricula, error)
 }
 
 type MaestroRepository interface {
@@ -104,4 +105,5 @@ type ClaseRepository interface {
 	Save(clase *Clase) error
 	Update(clase *Clase) error
 	Delete(claseID int64) error
+	RegistrarAsistencia(claseID int64, matriculaID int64) error
 }
