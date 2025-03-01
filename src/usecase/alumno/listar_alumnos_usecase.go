@@ -3,6 +3,7 @@ package usecase
 import (
 	"ebd/src/domain"
 	"ebd/src/shared"
+	"ebd/src/view/dto"
 )
 
 type ListarAlumnosUseCase struct {
@@ -14,10 +15,15 @@ func NewListarAlumnosUseCase(alumnoRepo domain.AlumnoRepository) *ListarAlumnosU
 }
 
 func (u *ListarAlumnosUseCase) Execute() shared.APIResponse {
+	alumnosDto := []dto.AlumnoDTO{}
 	alumnos, err := u.alumnoRepo.List()
 	if err != nil {
 		return shared.NewAPIResponse(500, "Error al obtener los alumnos", nil)
 	}
 
-	return shared.NewAPIResponse(200, "Alumnos obtenidos exitosamente", alumnos)
+	for _, alumno := range alumnos {
+		alumnosDto = append(alumnosDto, *alumno.ToDTO())
+	}
+
+	return shared.NewAPIResponse(200, "Alumnos obtenidos exitosamente", alumnosDto)
 }

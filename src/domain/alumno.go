@@ -140,5 +140,6 @@ func (a *Alumno) ToDTO() *dto.AlumnoDTO {
 		Acudiente:         a.acudiente,
 		AcudienteTelefono: a.acudienteTelefono,
 		Direccion:         a.direccion,
+		Edad:              a.CalcularEdad(),
 	}
 }

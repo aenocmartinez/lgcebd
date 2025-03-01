@@ -2,7 +2,6 @@ package dao
 
 import (
 	"ebd/src/domain"
-	"ebd/src/view/dto"
 
 	"gorm.io/gorm"
 )
@@ -73,27 +72,29 @@ func (r *AlumnoDao) FindByNombre(nombre string) (*domain.Alumno, error) {
 	return alumno, nil
 }
 
-func (r *AlumnoDao) List() ([]dto.AlumnoDTO, error) {
+func (r *AlumnoDao) List() ([]domain.Alumno, error) {
 	var alumnosData []alumnoDB
 	result := r.db.Find(&alumnosData)
 	if result.Error != nil {
-		return nil, result.Error
+		return []domain.Alumno{}, result.Error
 	}
 
-	alumnosDTO := []dto.AlumnoDTO{}
-	for _, alumno := range alumnosData {
-		alumnosDTO = append(alumnosDTO, dto.AlumnoDTO{
-			ID:                alumno.ID,
-			Nombre:            alumno.Nombre,
-			FechaNacimiento:   alumno.FechaNacimiento,
-			Telefono:          alumno.Telefono,
-			Acudiente:         alumno.Acudiente,
-			AcudienteTelefono: alumno.AcudienteTelefono,
-			Direccion:         alumno.Direccion,
-		})
+	alumnos := []domain.Alumno{}
+	for _, reg := range alumnosData {
+
+		alumno := domain.NewAlumno(r)
+		alumno.SetID(reg.ID)
+		alumno.SetNombre(reg.Nombre)
+		alumno.SetAcudiente(reg.Acudiente)
+		alumno.SetFechaNacimiento(reg.FechaNacimiento)
+		alumno.SetTelefono(reg.Telefono)
+		alumno.SetAcudienteTelefono(reg.AcudienteTelefono)
+		alumno.SetDireccion(reg.Direccion)
+
+		alumnos = append(alumnos, *alumno)
 	}
 
-	return alumnosDTO, nil
+	return alumnos, nil
 }
 
 func (r *AlumnoDao) Save(alumno *domain.Alumno) error {
