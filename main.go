@@ -37,16 +37,16 @@ func main() {
 
 		cursoGroup := protected.Group("/cursos")
 		{
-			cursoGroup.GET("/", controller.ListarCursos)
-			cursoGroup.POST("/", controller.CrearCurso)
+			cursoGroup.GET("", controller.ListarCursos)
+			cursoGroup.POST("", controller.CrearCurso)
 			cursoGroup.PUT("/:id", controller.ActualizarCurso)
 			cursoGroup.DELETE("/:id", controller.EliminarCurso)
 		}
 
 		periodoGroup := protected.Group("/periodos")
 		{
-			periodoGroup.GET("/", controller.ListarPeriodos)
-			periodoGroup.POST("/", controller.CrearPeriodo)
+			periodoGroup.GET("", controller.ListarPeriodos)
+			periodoGroup.POST("", controller.CrearPeriodo)
 			periodoGroup.PUT("/:id", controller.ActualizarPeriodo)
 			periodoGroup.DELETE("/:id", controller.EliminarPeriodo)
 			periodoGroup.GET("/:id/cursos", controller.ListarCursosDePeriodo)
@@ -58,8 +58,9 @@ func main() {
 
 		alumnoGroup := protected.Group("/alumnos")
 		{
-			alumnoGroup.GET("/", controller.ListarAlumnos)
-			alumnoGroup.POST("/", controller.CrearAlumno)
+			alumnoGroup.GET("", controller.ListarAlumnos)
+			alumnoGroup.GET("/:id", controller.BuscarAlumnoPorId)
+			alumnoGroup.POST("", controller.CrearAlumno)
 			alumnoGroup.PUT("/:id", controller.ActualizarAlumno)
 			alumnoGroup.DELETE("/:id", controller.EliminarAlumno)
 			alumnoGroup.POST("/:id/matriculas", controller.MatricularAlumno)
@@ -67,24 +68,25 @@ func main() {
 
 		maestroGroup := protected.Group("/maestros")
 		{
-			maestroGroup.GET("/", controller.ListarMaestros)
-			maestroGroup.POST("/", controller.CrearMaestro)
+			maestroGroup.GET("", controller.ListarMaestros)
+			maestroGroup.GET("/:id", controller.BuscarMaestroPorId)
+			maestroGroup.POST("", controller.CrearMaestro)
 			maestroGroup.PUT("/:id", controller.ActualizarMaestro)
 			maestroGroup.DELETE("/:id", controller.EliminarMaestro)
 		}
 
 		celebracionGroup := protected.Group("/celebraciones")
 		{
-			celebracionGroup.GET("/", controller.ListarCelebraciones)
-			celebracionGroup.POST("/", controller.CrearCelebracion)
+			celebracionGroup.GET("", controller.ListarCelebraciones)
+			celebracionGroup.POST("", controller.CrearCelebracion)
 			celebracionGroup.PUT("/:id", controller.ActualizarCelebracion)
 			celebracionGroup.DELETE("/:id", controller.EliminarCelebracion)
 		}
 
 		grupoGroup := protected.Group("/grupos")
 		{
-			grupoGroup.GET("/", controller.ListarGrupos)
-			grupoGroup.POST("/", controller.CrearGrupo)
+			grupoGroup.GET("", controller.ListarGrupos)
+			grupoGroup.POST("", controller.CrearGrupo)
 			grupoGroup.PUT("/:id", controller.ActualizarGrupo)
 			grupoGroup.DELETE("/:id", controller.EliminarGrupo)
 		}

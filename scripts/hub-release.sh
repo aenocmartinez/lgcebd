@@ -1,5 +1,5 @@
 #!/bin/bash
-image_name="redaccion_back"
+image_name="lgcebd-container"
 tag=$1
 allowed_tags=("qa" "latest" "stable" "test")
 if [[ -z "$tag" ]]; then

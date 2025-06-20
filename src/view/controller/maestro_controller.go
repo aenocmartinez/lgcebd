@@ -69,3 +69,16 @@ func EliminarMaestro(c *gin.Context) {
 	response := useCase.Execute(id)
 	c.JSON(response.StatusCode, response)
 }
+
+func BuscarMaestroPorId(c *gin.Context) {
+	id, err := shared.ConvertStringToID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID inválido", nil))
+		return
+	}
+
+	maestroRepo := di.GetContainer().GetMaestroRepository()
+	buscarMaestro := usecase.NewBuscarMaestroUseCase(maestroRepo)
+	response := buscarMaestro.Execute(id)
+	c.JSON(response.StatusCode, response)
+}

@@ -101,3 +101,16 @@ func MatricularAlumno(c *gin.Context) {
 	response := useCase.Execute(AlumnoID, request.CursoPeriodoID)
 	c.JSON(response.StatusCode, response)
 }
+
+func BuscarAlumnoPorId(c *gin.Context) {
+	id, err := shared.ConvertStringToID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID inválido", nil))
+		return
+	}
+
+	alumnoRepo := di.GetContainer().GetAlumnoRepository()
+	buscarAlumno := usecase.NewBuscarAlumnoUseCase(alumnoRepo)
+	response := buscarAlumno.Execute(id)
+	c.JSON(response.StatusCode, response)
+}
