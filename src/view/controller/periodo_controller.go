@@ -119,7 +119,7 @@ func AgregarContenidoTematico(c *gin.Context) {
 	}
 
 	agregarContenidoTematico := usecase.NewAgregarContenidoTematicoUseCase(di.GetContainer().GetContenidoTematicoRepository(), di.GetContainer().GetCursoPeriodoRepository())
-	response := agregarContenidoTematico.Execute(periodoID, req.Descripcion)
+	response := agregarContenidoTematico.Execute(periodoID, req.Descripcion, req.Orden)
 
 	c.JSON(response.StatusCode, response)
 }

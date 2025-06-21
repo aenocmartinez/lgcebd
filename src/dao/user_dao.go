@@ -20,15 +20,17 @@ type UserData struct {
 	Email        string
 	Password     string
 	SessionToken string
+	Name         string
 }
 
 func mapToUser(userData *UserData) *domain.User {
-	user := domain.NewUser(nil) // Se crea un User vacío
+	user := domain.NewUser(nil)
 	user.SetID(userData.ID)
 	user.SetUsername(userData.Username)
 	user.SetEmail(userData.Email)
 	user.SetPassword(userData.Password)
 	user.SetSessionToken(userData.SessionToken)
+	user.SetName(userData.Name)
 	return user
 }
 
@@ -75,6 +77,7 @@ func (r *UserDao) Save(user *domain.User) error {
 		Email:        user.GetEmail(),
 		Password:     user.GetPassword(),
 		SessionToken: user.GetSessionToken(),
+		Name:         user.GetName(),
 	}
 	return r.db.Table("users").Create(&userData).Error
 }
@@ -86,6 +89,7 @@ func (r *UserDao) Update(user *domain.User) error {
 		Email:        user.GetEmail(),
 		Password:     user.GetPassword(),
 		SessionToken: user.GetSessionToken(),
+		Name:         user.GetName(),
 	}
 	return r.db.Table("users").Where("id = ?", user.GetID()).Updates(&userData).Error
 }

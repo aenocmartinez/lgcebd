@@ -4,6 +4,7 @@ import "ebd/src/view/dto"
 
 type User struct {
 	id           int64
+	name         string
 	username     string
 	email        string
 	password     string
@@ -17,6 +18,10 @@ func NewUser(repository UserRepository) *User {
 
 func (u *User) SetID(id int64) {
 	u.id = id
+}
+
+func (u *User) SetName(name string) {
+	u.name = name
 }
 
 func (u *User) SetUsername(username string) {
@@ -37,6 +42,10 @@ func (u *User) SetSessionToken(sessionToken string) {
 
 func (u *User) GetID() int64 {
 	return u.id
+}
+
+func (u *User) GetName() string {
+	return u.name
 }
 
 func (u *User) GetUsername() string {
@@ -86,6 +95,7 @@ func (u *User) FindByUsername(username string) (*User, error) {
 func (u *User) ToDTO() *dto.UserDTO {
 	return &dto.UserDTO{
 		ID:           u.id,
+		Name:         u.name,
 		Username:     u.username,
 		Email:        u.email,
 		SessionToken: u.sessionToken,

@@ -19,7 +19,7 @@ func NewAgregarContenidoTematicoUseCase(
 	}
 }
 
-func (uc *AgregarContenidoTematicoUseCase) Execute(cursoPeriodoID int64, descripcion string) shared.APIResponse {
+func (uc *AgregarContenidoTematicoUseCase) Execute(cursoPeriodoID int64, descripcion string, orden int) shared.APIResponse {
 
 	contenidoTematico := uc.contenidoTematicoRepo.FindByDescripcion(cursoPeriodoID, descripcion)
 	if contenidoTematico.Existe() {
@@ -31,7 +31,7 @@ func (uc *AgregarContenidoTematicoUseCase) Execute(cursoPeriodoID int64, descrip
 		return shared.NewAPIResponse(404, "Curso no encontrado", nil)
 	}
 
-	err := cursoPeriodo.AgregarContenidoTematico(descripcion)
+	err := cursoPeriodo.AgregarContenidoTematico(descripcion, orden)
 	if err != nil {
 		return shared.NewAPIResponse(500, "Ha ocurrido un error en el sistema", nil)
 	}

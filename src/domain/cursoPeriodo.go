@@ -71,9 +71,10 @@ func (cp *CursoPeriodo) Existe() bool {
 	return cp.id > 0
 }
 
-func (cp *CursoPeriodo) AgregarContenidoTematico(descripcion string) error {
+func (cp *CursoPeriodo) AgregarContenidoTematico(descripcion string, orden int) error {
 	contenidoTematico := NewContenidoTematico(nil)
 	contenidoTematico.SetDescripcion(descripcion)
+	contenidoTematico.SetOrden(orden)
 	return cp.repository.AgregarContenidoTematico(cp.id, contenidoTematico)
 }
 

@@ -128,9 +128,15 @@ func (r *CursoPeriodoDao) AgregarContenidoTematico(cursoPeriodoID int64, conteni
 	contenidoData := struct {
 		Descripcion    string `gorm:"column:descripcion"`
 		PeriodoCursoID int64  `gorm:"column:periodo_curso_id"`
+		Orden          *int   `gorm:"column:orden"`
 	}{
 		Descripcion:    contenidoTematico.GetDescripcion(),
 		PeriodoCursoID: cursoPeriodoID,
+	}
+
+	if contenidoTematico.GetOrden() != 0 {
+		orden := contenidoTematico.GetOrden()
+		contenidoData.Orden = &orden
 	}
 
 	result := r.db.Table("contenido_tematico").Create(&contenidoData)
@@ -154,9 +160,15 @@ func (r *CursoPeriodoDao) ListarContenidoTematico(cursoPeriodoID int64) []domain
 		ID             int64  `gorm:"column:id"`
 		Descripcion    string `gorm:"column:descripcion"`
 		PeriodoCursoID int64  `gorm:"column:periodo_curso_id"`
+		Orden          *int   `gorm:"column:orden"`
 	}
 
-	result := r.db.Table("contenido_tematico").Where("periodo_curso_id = ?", cursoPeriodoID).Find(&contenidoData)
+	result := r.db.
+		Table("contenido_tematico").
+		Where("periodo_curso_id = ?", cursoPeriodoID).
+		Order("orden IS NULL, orden ASC").
+		Find(&contenidoData)
+
 	if result.Error != nil {
 		return []domain.ContenidoTematico{}
 	}
@@ -168,6 +180,13 @@ func (r *CursoPeriodoDao) ListarContenidoTematico(cursoPeriodoID int64) []domain
 		contenido.SetDescripcion(data.Descripcion)
 		contenido.SetCursoPeriodo(domain.NewCursoPeriodoEmpty(r))
 		contenido.GetCursoPeriodo().SetID(data.PeriodoCursoID)
+
+		if data.Orden != nil {
+			contenido.SetOrden(*data.Orden)
+		} else {
+			contenido.SetOrden(0)
+		}
+
 		contenidos = append(contenidos, *contenido)
 	}
 

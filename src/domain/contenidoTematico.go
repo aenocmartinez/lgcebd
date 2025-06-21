@@ -5,6 +5,7 @@ import "ebd/src/view/dto"
 type ContenidoTematico struct {
 	id           int64
 	descripcion  string
+	orden        int
 	cursoPeriodo *CursoPeriodo
 	repository   ContenidoTematicoRepository
 }
@@ -25,6 +26,14 @@ func (c *ContenidoTematico) SetID(id int64) {
 
 func (c *ContenidoTematico) GetID() int64 {
 	return c.id
+}
+
+func (c *ContenidoTematico) SetOrden(orden int) {
+	c.orden = orden
+}
+
+func (c *ContenidoTematico) GetOrden() int {
+	return c.orden
 }
 
 func (c *ContenidoTematico) SetDescripcion(descripcion string) {
@@ -62,6 +71,7 @@ func (c *ContenidoTematico) Eliminar() error {
 func (c *ContenidoTematico) ToDTO() dto.ConteniodoTematicoDTO {
 	return dto.ConteniodoTematicoDTO{
 		ID:           c.id,
+		Orden:        c.orden,
 		Descripcion:  c.descripcion,
 		CursoPeriodo: c.cursoPeriodo.ToDTO(),
 	}

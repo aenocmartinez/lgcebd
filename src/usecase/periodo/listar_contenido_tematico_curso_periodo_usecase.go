@@ -32,6 +32,7 @@ func (uc *ListarContenidoTematicoDeUnCursoPeriodoUseCase) Execute(cursoPeriodoID
 
 		contenidos = append(contenidos, dto.ItemConteniodoTematicoDTO{
 			ID:          contenido.GetID(),
+			Orden:       contenido.GetOrden(),
 			Descripcion: contenido.GetDescripcion(),
 		})
 	}

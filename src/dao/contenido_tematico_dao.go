@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"database/sql"
 	"ebd/src/domain"
 
 	"gorm.io/gorm"
@@ -15,9 +16,10 @@ func NewContenidoTematicoDao(db *gorm.DB) *ContenidoTematicoDao {
 }
 
 type contenidoTematicoDB struct {
-	ID             int64  `gorm:"column:id"`
-	Descripcion    string `gorm:"column:descripcion"`
-	PeriodoCursoID int64  `gorm:"column:periodo_curso_id"`
+	ID             int64         `gorm:"column:id"`
+	Descripcion    string        `gorm:"column:descripcion"`
+	PeriodoCursoID int64         `gorm:"column:periodo_curso_id"`
+	Orden          sql.NullInt64 `gorm:"column:orden"`
 }
 
 func (contenidoTematicoDB) TableName() string {
@@ -36,6 +38,11 @@ func (r *ContenidoTematicoDao) FindByID(id int64) *domain.ContenidoTematico {
 	contenido.SetDescripcion(contenidoData.Descripcion)
 	contenido.SetCursoPeriodo(domain.NewCursoPeriodoEmpty(nil))
 	contenido.GetCursoPeriodo().SetID(contenidoData.PeriodoCursoID)
+	if contenidoData.Orden.Valid {
+		contenido.SetOrden(int(contenidoData.Orden.Int64))
+	} else {
+		contenido.SetOrden(0)
+	}
 
 	return contenido
 }
@@ -52,14 +59,25 @@ func (r *ContenidoTematicoDao) FindByDescripcion(cursoPeriodoID int64, descripci
 	contenido.SetDescripcion(contenidoData.Descripcion)
 	contenido.SetCursoPeriodo(domain.NewCursoPeriodoEmpty(nil))
 	contenido.GetCursoPeriodo().SetID(contenidoData.PeriodoCursoID)
+	if contenidoData.Orden.Valid {
+		contenido.SetOrden(int(contenidoData.Orden.Int64))
+	} else {
+		contenido.SetOrden(0)
+	}
 
 	return contenido
 }
 
 func (r *ContenidoTematicoDao) Save(contenido *domain.ContenidoTematico) error {
+	ordenValue := sql.NullInt64{Valid: false}
+	if contenido.GetOrden() != 0 {
+		ordenValue = sql.NullInt64{Int64: int64(contenido.GetOrden()), Valid: true}
+	}
+
 	contenidoData := contenidoTematicoDB{
 		Descripcion:    contenido.GetDescripcion(),
 		PeriodoCursoID: contenido.GetCursoPeriodo().GetID(),
+		Orden:          ordenValue,
 	}
 
 	result := r.db.Create(&contenidoData)
@@ -72,9 +90,15 @@ func (r *ContenidoTematicoDao) Save(contenido *domain.ContenidoTematico) error {
 }
 
 func (r *ContenidoTematicoDao) Update(contenido *domain.ContenidoTematico) error {
+	ordenValue := sql.NullInt64{Valid: false}
+	if contenido.GetOrden() != 0 {
+		ordenValue = sql.NullInt64{Int64: int64(contenido.GetOrden()), Valid: true}
+	}
+
 	return r.db.Where("id = ?", contenido.GetID()).Updates(contenidoTematicoDB{
 		Descripcion:    contenido.GetDescripcion(),
 		PeriodoCursoID: contenido.GetCursoPeriodo().GetID(),
+		Orden:          ordenValue,
 	}).Error
 }
 
@@ -96,6 +120,11 @@ func (r *ContenidoTematicoDao) List() []domain.ContenidoTematico {
 		c.SetDescripcion(contenido.Descripcion)
 		c.SetCursoPeriodo(domain.NewCursoPeriodoEmpty(nil))
 		c.GetCursoPeriodo().SetID(contenido.PeriodoCursoID)
+		if contenido.Orden.Valid {
+			c.SetOrden(int(contenido.Orden.Int64))
+		} else {
+			c.SetOrden(0)
+		}
 		contenidos = append(contenidos, *c)
 	}
 
