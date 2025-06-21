@@ -99,6 +99,7 @@ func (r *MatriculaDao) ObtenerMatriculasPorCursoPeriodo(cursoPeriodoID int64) ([
 		Acudiente         string `gorm:"column:acudiente"`
 		AcudienteTelefono string `gorm:"column:acudiente_telefono"`
 		Direccion         string `gorm:"column:direccion"`
+		Activo            bool   `gorm:"column:activo"`
 		CursoPeriodoID    int64  `gorm:"column:periodo_curso_id"`
 	}
 
@@ -111,6 +112,7 @@ func (r *MatriculaDao) ObtenerMatriculasPorCursoPeriodo(cursoPeriodoID int64) ([
 		       a.acudiente, 
 		       a.acudiente_telefono, 
 		       a.direccion,
+		       a.activo, -- NUEVO CAMPO EN SELECT
 		       m.periodo_curso_id
 		FROM matriculas m
 		INNER JOIN alumnos a ON a.id = m.alumnno_id
@@ -133,6 +135,7 @@ func (r *MatriculaDao) ObtenerMatriculasPorCursoPeriodo(cursoPeriodoID int64) ([
 		alumno.SetAcudiente(data.Acudiente)
 		alumno.SetAcudienteTelefono(data.AcudienteTelefono)
 		alumno.SetDireccion(data.Direccion)
+		alumno.SetActivo(data.Activo)
 
 		cursoPeriodo := domain.NewCursoPeriodoEmpty(nil)
 		cursoPeriodo.SetID(data.CursoPeriodoID)

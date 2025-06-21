@@ -22,6 +22,7 @@ type alumnoDB struct {
 	Acudiente         string `gorm:"column:acudiente"`
 	AcudienteTelefono string `gorm:"column:acudiente_telefono"`
 	Direccion         string `gorm:"column:direccion"`
+	Activo            bool   `gorm:"column:activo"`
 }
 
 func (alumnoDB) TableName() string {
@@ -46,6 +47,7 @@ func (r *AlumnoDao) FindByID(id int64) (*domain.Alumno, error) {
 	alumno.SetAcudiente(alumnoData.Acudiente)
 	alumno.SetAcudienteTelefono(alumnoData.AcudienteTelefono)
 	alumno.SetDireccion(alumnoData.Direccion)
+	alumno.SetActivo(alumnoData.Activo)
 
 	return alumno, nil
 }
@@ -68,6 +70,7 @@ func (r *AlumnoDao) FindByNombre(nombre string) (*domain.Alumno, error) {
 	alumno.SetAcudiente(alumnoData.Acudiente)
 	alumno.SetAcudienteTelefono(alumnoData.AcudienteTelefono)
 	alumno.SetDireccion(alumnoData.Direccion)
+	alumno.SetActivo(alumnoData.Activo)
 
 	return alumno, nil
 }
@@ -81,15 +84,15 @@ func (r *AlumnoDao) List() ([]domain.Alumno, error) {
 
 	alumnos := []domain.Alumno{}
 	for _, reg := range alumnosData {
-
 		alumno := domain.NewAlumno(r)
 		alumno.SetID(reg.ID)
 		alumno.SetNombre(reg.Nombre)
-		alumno.SetAcudiente(reg.Acudiente)
 		alumno.SetFechaNacimiento(reg.FechaNacimiento)
 		alumno.SetTelefono(reg.Telefono)
+		alumno.SetAcudiente(reg.Acudiente)
 		alumno.SetAcudienteTelefono(reg.AcudienteTelefono)
 		alumno.SetDireccion(reg.Direccion)
+		alumno.SetActivo(reg.Activo)
 
 		alumnos = append(alumnos, *alumno)
 	}
@@ -124,6 +127,7 @@ func (r *AlumnoDao) Update(alumno *domain.Alumno) error {
 		Acudiente:         alumno.GetAcudiente(),
 		AcudienteTelefono: alumno.GetAcudienteTelefono(),
 		Direccion:         alumno.GetDireccion(),
+		Activo:            alumno.GetActivo(),
 	}).Error
 }
 
@@ -144,7 +148,6 @@ func (r *AlumnoDao) TieneCursoMatriculado(alumnoID, periodoID int64) bool {
 		JOIN periodo_cursos pc ON m.periodo_curso_id = pc.id
 		WHERE m.alumnno_id = ? AND pc.periodo_id = ?;
 	`
-
 	err := r.db.Raw(query, alumnoID, periodoID).Count(&count).Error
 	if err != nil {
 		return false

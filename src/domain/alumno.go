@@ -15,6 +15,7 @@ type Alumno struct {
 	acudiente         string
 	acudienteTelefono string
 	direccion         string
+	activo            bool
 	repository        AlumnoRepository
 }
 
@@ -50,6 +51,10 @@ func (a *Alumno) SetDireccion(direccion string) {
 	a.direccion = direccion
 }
 
+func (a *Alumno) SetActivo(activo bool) {
+	a.activo = activo
+}
+
 func (a *Alumno) GetID() int64 {
 	return a.id
 }
@@ -76,6 +81,10 @@ func (a *Alumno) GetAcudienteTelefono() string {
 
 func (a *Alumno) GetDireccion() string {
 	return a.direccion
+}
+
+func (a *Alumno) GetActivo() bool {
+	return a.activo
 }
 
 func (a *Alumno) Existe() bool {
@@ -141,5 +150,6 @@ func (a *Alumno) ToDTO() *dto.AlumnoDTO {
 		AcudienteTelefono: a.acudienteTelefono,
 		Direccion:         a.direccion,
 		Edad:              a.CalcularEdad(),
+		Activo:            a.activo,
 	}
 }

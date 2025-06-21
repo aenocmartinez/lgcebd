@@ -47,6 +47,7 @@ func (u *ListarAlumnosMatriculadosUseCase) Execute(periodoID, cursoID int64) sha
 			Acudiente:         matricula.GetAlumno().GetAcudiente(),
 			AcudienteTelefono: matricula.GetAlumno().GetAcudienteTelefono(),
 			Direccion:         matricula.GetAlumno().GetDireccion(),
+			Activo:            matricula.GetAlumno().GetActivo(),
 			Edad:              matricula.GetAlumno().CalcularEdad(),
 		})
 	}
