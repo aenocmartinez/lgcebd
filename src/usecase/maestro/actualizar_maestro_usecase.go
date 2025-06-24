@@ -17,7 +17,7 @@ func NewActualizarMaestroUseCase(maestroRepo domain.MaestroRepository) *Actualiz
 func (u *ActualizarMaestroUseCase) Execute(id int64, maestroDTO dto.MaestroDTO) shared.APIResponse {
 
 	maestro := u.maestroRepo.FindByID(id)
-	if maestro.Existe() {
+	if !maestro.Existe() {
 		return shared.NewAPIResponse(404, "Maestro no encontrado", nil)
 	}
 
