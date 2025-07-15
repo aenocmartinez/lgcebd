@@ -192,3 +192,32 @@ func (r *CursoPeriodoDao) ListarContenidoTematico(cursoPeriodoID int64) []domain
 
 	return contenidos
 }
+
+func (r *CursoPeriodoDao) ObtenerPeriodoCursoIDPorEdad(edad int) (int64, error) {
+	var data struct {
+		ID int64 `gorm:"column:id"`
+	}
+
+	query := `
+		SELECT pc.id
+		FROM periodo_cursos pc
+		JOIN cursos c ON c.id = pc.curso_id
+		JOIN periodos p ON p.id = pc.periodo_id
+		WHERE
+		c.edad_minima <= ?
+		AND c.edad_maxima >= ?
+		ORDER BY p.id DESC
+		LIMIT 1
+	`
+	result := r.db.Raw(query, edad, edad).Scan(&data)
+
+	if result.Error != nil {
+		return 0, result.Error
+	}
+
+	if data.ID == 0 {
+		return 0, fmt.Errorf("no se encontró un curso periodo para la edad %d", edad)
+	}
+
+	return data.ID, nil
+}

@@ -31,7 +31,10 @@ func CrearAlumno(c *gin.Context) {
 	}
 
 	alumnoRepo := di.GetContainer().GetAlumnoRepository()
-	crearAlumno := usecase.NewCrearAlumnoUseCase(alumnoRepo)
+	cursoPeriodoRepo := di.GetContainer().GetCursoPeriodoRepository()
+	matriculaRepo := di.GetContainer().GetMatriculaRepository()
+	crearAlumno := usecase.NewCrearAlumnoUseCase(alumnoRepo, cursoPeriodoRepo, matriculaRepo)
+
 	response := crearAlumno.Execute(request)
 	c.JSON(response.StatusCode, response)
 }

@@ -108,6 +108,7 @@ func (r *AlumnoDao) Save(alumno *domain.Alumno) error {
 		Acudiente:         alumno.GetAcudiente(),
 		AcudienteTelefono: alumno.GetAcudienteTelefono(),
 		Direccion:         alumno.GetDireccion(),
+		Activo:            alumno.GetActivo(),
 	}
 
 	result := r.db.Create(&alumnoData)

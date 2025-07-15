@@ -49,6 +49,7 @@ type CursoPeriodoRepository interface {
 	QuitarContenidoTematico(cursoPeriodoID int64, contenidoTematicoID int64) error
 	ListarContenidoTematico(cursoPeriodoID int64) []ContenidoTematico
 	FindByID(id int64) *CursoPeriodo
+	ObtenerPeriodoCursoIDPorEdad(edad int) (int64, error)
 }
 
 type MatriculaRepository interface {
