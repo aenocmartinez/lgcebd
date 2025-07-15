@@ -4,7 +4,6 @@ import (
 	"ebd/src/domain"
 	"ebd/src/shared"
 	"ebd/src/view/dto"
-	"fmt"
 	"log"
 )
 
@@ -30,8 +29,6 @@ func NewActualizarGrupoUseCase(
 }
 
 func (uc *ActualizarGrupoUseCase) Execute(grupoID int64, datos dto.GuardarGrupoDto) shared.APIResponse {
-
-	fmt.Println("Ejecutando ActualizarGrupoUseCase")
 
 	servicio := newGrupoService(uc.grupoRepo, uc.celebracionRepo, uc.cursoPeriodoRepo)
 

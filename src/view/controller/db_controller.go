@@ -35,3 +35,10 @@ func CheckDBConnection(c *gin.Context) {
 		"message": "Conexión a la base de datos establecida correctamente",
 	})
 }
+
+func Mutant(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Version 1.0.0 - Mutant endpoint",
+	})
+}

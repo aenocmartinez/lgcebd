@@ -28,6 +28,7 @@ func main() {
 
 	r.POST("/login", controller.Login)
 	r.GET("/check-db", controller.CheckDBConnection)
+	r.GET("/mutant", controller.Mutant)
 
 	protected := r.Group("/api")
 	protected.Use(middleware.AuthMiddleware())
