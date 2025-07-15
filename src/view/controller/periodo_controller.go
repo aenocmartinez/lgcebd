@@ -29,7 +29,14 @@ func CrearPeriodo(c *gin.Context) {
 		return
 	}
 
-	useCase := usecase.NewCrearPeriodoUseCase(di.GetContainer().GetPeriodoRepository(), di.GetContainer().GetCursoRepository())
+	useCase := usecase.NewCrearPeriodoUseCase(
+		di.GetContainer().GetPeriodoRepository(),
+		di.GetContainer().GetCursoRepository(),
+		di.GetContainer().GetMatriculaRepository(),
+		di.GetContainer().GetAlumnoRepository(),
+		di.GetContainer().GetCursoPeriodoRepository(),
+	)
+
 	response := useCase.Execute(request.ToDTO())
 	c.JSON(response.StatusCode, response)
 }
