@@ -156,3 +156,7 @@ func (r *AlumnoDao) TieneCursoMatriculado(alumnoID, periodoID int64) bool {
 
 	return count > 0
 }
+
+func (r *AlumnoDao) CambiarEstado(alumnoID int64, nuevoEstado bool) error {
+	return r.db.Model(&alumnoDB{}).Where("id = ?", alumnoID).Update("activo", nuevoEstado).Error
+}

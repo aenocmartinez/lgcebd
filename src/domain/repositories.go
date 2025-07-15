@@ -40,6 +40,7 @@ type AlumnoRepository interface {
 	Delete(id int64) error
 	MatricularCurso(alumnoID, cursoPeriodoID int64) error
 	TieneCursoMatriculado(alumnoID, periodoID int64) bool
+	CambiarEstado(alumnoID int64, nuevoEstado bool) error
 }
 
 type CursoPeriodoRepository interface {

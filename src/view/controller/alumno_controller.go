@@ -117,3 +117,19 @@ func BuscarAlumnoPorId(c *gin.Context) {
 	response := buscarAlumno.Execute(id)
 	c.JSON(response.StatusCode, response)
 }
+
+func CambiarEstadoAlumno(c *gin.Context) {
+	id, err := shared.ConvertStringToID(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "ID inválido", nil))
+		return
+	}
+
+	alumnoRepo := di.GetContainer().GetAlumnoRepository()
+	cursoPeriodoRepo := di.GetContainer().GetCursoPeriodoRepository()
+	matriculaRepo := di.GetContainer().GetMatriculaRepository()
+
+	useCase := usecase.NewCambiarEstadoAlumnoUseCase(alumnoRepo, cursoPeriodoRepo, matriculaRepo)
+	response := useCase.CambiarEstado(id)
+	c.JSON(response.StatusCode, response)
+}

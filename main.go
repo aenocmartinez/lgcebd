@@ -65,6 +65,7 @@ func main() {
 			alumnoGroup.PUT("/:id", controller.ActualizarAlumno)
 			alumnoGroup.DELETE("/:id", controller.EliminarAlumno)
 			alumnoGroup.POST("/:id/matriculas", controller.MatricularAlumno)
+			alumnoGroup.PUT("/:id/cambiar-estado", controller.CambiarEstadoAlumno)
 		}
 
 		maestroGroup := protected.Group("/maestros")
