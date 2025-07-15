@@ -39,6 +39,11 @@ func (u *ListarAlumnosMatriculadosUseCase) Execute(periodoID, cursoID int64) sha
 
 	alumnosDTO := []dto.AlumnoDTO{}
 	for _, matricula := range matriculas {
+
+		if !matricula.GetAlumno().GetActivo() {
+			continue
+		}
+
 		alumnosDTO = append(alumnosDTO, dto.AlumnoDTO{
 			ID:                matricula.GetAlumnoID(),
 			Nombre:            matricula.GetAlumno().GetNombre(),
