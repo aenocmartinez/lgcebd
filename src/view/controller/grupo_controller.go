@@ -90,3 +90,29 @@ func ListarGrupos(c *gin.Context) {
 	response := listarGrupos.Execute()
 	c.JSON(response.StatusCode, response)
 }
+
+func GuardarGrupo(c *gin.Context) {
+	var req formrequest.GrupoFormRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, shared.NewAPIResponse(http.StatusBadRequest, "Datos de entrada no válidos", nil))
+		return
+	}
+
+	datos := dto.GuardarGrupoDto{
+		CelebracionID:  req.CelebracionID,
+		CursoPeriodoID: req.CursoPeriodoID,
+		Maestros:       req.Maestros,
+	}
+
+	guardarGrupo := usecase.NewGuardarGrupoUseCase(
+		di.GetContainer().GetGrupoRepository(),
+		di.GetContainer().GetCelebracionRepository(),
+		di.GetContainer().GetCursoPeriodoRepository(),
+		di.GetContainer().GetMaestroRepository(),
+	)
+
+	response := guardarGrupo.Execute(req.ID, datos)
+
+	c.JSON(response.StatusCode, response)
+}

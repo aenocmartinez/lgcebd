@@ -14,10 +14,12 @@ type CrearGrupoUseCase struct {
 	maestroRepo      domain.MaestroRepository
 }
 
-func NewCrearGrupoUseCase(repoGrupo domain.GrupoRepository,
+func NewCrearGrupoUseCase(
+	repoGrupo domain.GrupoRepository,
 	celebracionRepo domain.CelebracionRepository,
 	cursoPeriodoRepo domain.CursoPeriodoRepository,
-	maestroRepo domain.MaestroRepository) *CrearGrupoUseCase {
+	maestroRepo domain.MaestroRepository,
+) *CrearGrupoUseCase {
 	return &CrearGrupoUseCase{
 		grupoRepo:        repoGrupo,
 		celebracionRepo:  celebracionRepo,
@@ -28,26 +30,23 @@ func NewCrearGrupoUseCase(repoGrupo domain.GrupoRepository,
 
 func (uc *CrearGrupoUseCase) Execute(datos dto.GuardarGrupoDto) shared.APIResponse {
 
-	grupo := uc.grupoRepo.FindByCursoPeriodoYCelebracion(datos.CursoPeriodoID, datos.CelebracionID)
-	if grupo.Existe() {
+	servicio := newGrupoService(uc.grupoRepo, uc.celebracionRepo, uc.cursoPeriodoRepo)
+
+	grupoExistente := uc.grupoRepo.FindByCursoPeriodoYCelebracion(datos.CursoPeriodoID, datos.CelebracionID)
+	if grupoExistente.Existe() {
 		return shared.NewAPIResponse(409, "Ya existe un grupo para esta celebración", nil)
 	}
 
-	celebracion := uc.celebracionRepo.FindByID(datos.CelebracionID)
-	if !celebracion.Existe() {
-		return shared.NewAPIResponse(404, "Celebración no encontrada", nil)
+	celebracion, cursoPeriodo, errMsg := servicio.validarDatosBasicos(datos)
+	if errMsg != nil {
+		return shared.NewAPIResponse(404, *errMsg, nil)
 	}
 
-	cursoPeriodo := uc.cursoPeriodoRepo.FindByID(datos.CursoPeriodoID)
-	if !cursoPeriodo.Existe() {
-		return shared.NewAPIResponse(404, "Curso no encontrado", nil)
-	}
-
+	grupo := domain.NewGrupo(uc.grupoRepo)
 	grupo.SetCelebracion(celebracion)
 	grupo.SetCursoPeriodo(cursoPeriodo)
 
-	err := grupo.Crear()
-	if err != nil {
+	if err := grupo.Crear(); err != nil {
 		return shared.NewAPIResponse(500, "Ha ocurrido un error en el sistema", nil)
 	}
 

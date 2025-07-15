@@ -86,8 +86,10 @@ func main() {
 		grupoGroup := protected.Group("/grupos")
 		{
 			grupoGroup.GET("", controller.ListarGrupos)
-			grupoGroup.POST("", controller.CrearGrupo)
-			grupoGroup.PUT("/:id", controller.ActualizarGrupo)
+			// grupoGroup.POST("", controller.CrearGrupo)
+			grupoGroup.POST("", controller.GuardarGrupo)
+			// grupoGroup.PUT("/:id", controller.ActualizarGrupo)
+
 			grupoGroup.DELETE("/:id", controller.EliminarGrupo)
 		}
 
