@@ -5,6 +5,7 @@ import (
 	"ebd/src/shared"
 	"ebd/src/view/dto"
 	"fmt"
+	"sync"
 
 	alumnoUseCase "ebd/src/usecase/alumno"
 )
@@ -60,20 +61,9 @@ func (u *CrearPeriodoUseCase) Execute(request dto.PeriodoDTO) shared.APIResponse
 		return shared.NewAPIResponse(500, "Error al obtener los cursos", nil)
 	}
 
-	if len(cursos) == 0 {
-		return shared.NewAPIResponse(200, "Periodo creado sin cursos asociados, no hay cursos habilitados.", nil)
-	}
-
-	for _, curso := range cursos {
-
-		if curso.Estado == "inactivo" {
-			continue
-		}
-
-		err := u.periodoRepo.AgregarCurso(nuevoPeriodo.GetID(), curso.ID)
-		if err != nil {
-			return shared.NewAPIResponse(500, "Error al asociar el curso al periodo", nil)
-		}
+	err = u.asociarCursosAlPeriodo(nuevoPeriodo.GetID(), cursos)
+	if err != nil {
+		return shared.NewAPIResponse(500, "Error al asociar al menos un curso al periodo", nil)
 	}
 
 	// Matricular alumnos activos al nuevo periodo de acuerdo a su edad
@@ -82,22 +72,60 @@ func (u *CrearPeriodoUseCase) Execute(request dto.PeriodoDTO) shared.APIResponse
 		return shared.NewAPIResponse(500, "Error al obtener los alumnos", nil)
 	}
 
+	u.matricularAlumnosAlPeriodo(alumnos)
+
+	return shared.NewAPIResponse(200, "Periodo creado exitosamente.", nuevoPeriodo.ToDTO())
+}
+
+func (u *CrearPeriodoUseCase) asociarCursosAlPeriodo(periodoID int64, cursos []dto.CursoDTO) error {
+	var wg sync.WaitGroup
+	var errOnce sync.Once
+	var firstErr error
+
+	for _, curso := range cursos {
+		if curso.Estado == "inactivo" {
+			continue
+		}
+
+		wg.Add(1)
+		go func(c dto.CursoDTO) {
+			defer wg.Done()
+			if err := u.periodoRepo.AgregarCurso(periodoID, c.ID); err != nil {
+				errOnce.Do(func() {
+					firstErr = err
+				})
+			}
+		}(curso)
+	}
+
+	wg.Wait()
+	return firstErr
+}
+
+func (u *CrearPeriodoUseCase) matricularAlumnosAlPeriodo(alumnos []domain.Alumno) {
+	var wg sync.WaitGroup
 	matricularUseCase := alumnoUseCase.NewMatricularAlumnoUseCase(u.alumnoRepo, u.cursoPeriodoRepo, u.matriculaRepo)
 
 	for _, alumno := range alumnos {
-
 		if !alumno.GetActivo() {
 			continue
 		}
 
-		periodoID, err := u.cursoPeriodoRepo.ObtenerPeriodoCursoIDPorEdad(alumno.CalcularEdad())
-		if err != nil {
-			fmt.Println("Error al obtener el periodo por edad:", err.Error(), " - Alumno ID:", alumno.GetID())
-			continue
-		}
+		wg.Add(1)
+		go func(a domain.Alumno) {
+			defer wg.Done()
 
-		matricularUseCase.Execute(alumno.GetID(), periodoID)
+			edad := a.CalcularEdad()
+			periodoID, err := u.cursoPeriodoRepo.ObtenerPeriodoCursoIDPorEdad(edad)
+			if err != nil {
+				fmt.Printf("Error al obtener el periodo por edad: %v - Alumno ID: %d\n", err, a.GetID())
+				u.alumnoRepo.CambiarEstado(a.GetID(), false)
+				return
+			}
+
+			matricularUseCase.Execute(a.GetID(), periodoID)
+		}(alumno)
 	}
 
-	return shared.NewAPIResponse(200, "Periodo creado y cursos asociados exitosamente.", nuevoPeriodo.ToDTO())
+	wg.Wait()
 }
